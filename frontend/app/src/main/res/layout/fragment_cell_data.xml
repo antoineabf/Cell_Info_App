@@ -64,7 +64,7 @@
             android:text="Signal Power: " />
 
         <TextView
-            android:id="@+id/textViewSignalPower"
+            android:id="@+id/txtSignalPower"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -89,7 +89,7 @@
             android:text="SINR: " />
 
         <TextView
-            android:id="@+id/textViewSINR"
+            android:id="@+id/txtSINR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -114,7 +114,7 @@
             android:text="Network Type: " />
 
         <TextView
-            android:id="@+id/textViewNetworkType"
+            android:id="@+id/txtNetworkType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -139,7 +139,7 @@
             android:text="Frequency Band: " />
 
         <TextView
-            android:id="@+id/textViewFrequencyBand"
+            android:id="@+id/txtFrequencyBand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -164,7 +164,7 @@
             android:text="Cell ID: " />
 
         <TextView
-            android:id="@+id/textViewCellID"
+            android:id="@+id/txtCellID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -189,7 +189,7 @@
             android:text="Timestamp: " />
 
         <TextView
-            android:id="@+id/textViewTimestamp"
+            android:id="@+id/txtTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
