@@ -10,8 +10,9 @@ class CellData(db.Model):
     frequency_band = db.Column(db.String(20), nullable=True)
     cell_id = db.Column(db.String(50), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
+    user_ip = db.Column(db.String(30), nullable=False)
 
-    def __init__(self, operator, signalPower, sinr_snr, networkType, frequency_band, cell_id, timestamp):
+    def __init__(self, operator, signalPower, sinr_snr, networkType, frequency_band, cell_id, timestamp, user_ip):
         self.operator = operator
         self.signalPower = signalPower
         self.sinr_snr = sinr_snr
@@ -19,11 +20,12 @@ class CellData(db.Model):
         self.frequency_band = frequency_band
         self.cell_id = cell_id
         self.timestamp = timestamp
+        self.user_ip = user_ip
 
 
 class CellDataSchema(ma.Schema):
     class Meta:
-        fields = ("operator", "signalPower", "sinr_snr", "networkType", "frequency_band", "cell_id", "timestamp")
+        fields = ("operator", "signalPower", "sinr_snr", "networkType", "frequency_band", "cell_id", "timestamp", "user_ip")
         model = CellData
 
 
