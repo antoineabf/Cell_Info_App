@@ -22,6 +22,7 @@ import android.Manifest
 import android.telephony.CellIdentityGsm
 import android.telephony.CellIdentityLte
 import android.telephony.CellIdentityWcdma
+import android.telephony.CellInfo
 import androidx.core.app.ActivityCompat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,6 +47,14 @@ class CellDataFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity?.let {
+
+            ActivityCompat.requestPermissions(
+                it,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                123
+            )
+        }
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_cell_data, container, false)
 
@@ -56,15 +65,16 @@ class CellDataFragment : Fragment() {
         frequencyBandTextView = view.findViewById(R.id.txtFrequencyBand)
         cellIDTextView = view.findViewById(R.id.txtCellID)
         timestampTextView = view.findViewById(R.id.txtTimestamp)
-
-        val cellData: CellData? = null
-
-
         operatorTextView?.text = getOperatorName()
         cellIDTextView?.text = getCellID(requireContext()).toString()
         signalPowerTextView?.text = getSignalStrength(requireContext())
         networkTypeTextView?.text = getNetworkType(requireContext())
+        frequencyBandTextView?.text=getFrequencyBand(requireContext())
         timestampTextView?.text = getTimestamp()
+
+
+
+
 
         return view
     }
@@ -108,13 +118,14 @@ class CellDataFragment : Fragment() {
                 }
             } else {
                 // If permission is not granted, request it from the user
-                activity?.let {
-                    ActivityCompat.requestPermissions(
-                        it,
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        123
-                    )
-                }
+//                activity?.let {
+//                    ActivityCompat.requestPermissions(
+//                        it,
+//                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+//                        123
+//                    )
+//                }
+                return "Not available yet"
             }
 
         }
@@ -185,13 +196,14 @@ class CellDataFragment : Fragment() {
             }
         } else {
             // If permission is not granted, request it from the user
-            activity?.let {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_CODE_PERMISSION
-                )
-            }
+//            activity?.let {
+//                ActivityCompat.requestPermissions(
+//                    it,
+//                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+//                    REQUEST_CODE_PERMISSION
+//                )
+//            }
+            return -1
         }
         return -1 // Default value if cell ID cannot be retrieved
     }
@@ -202,6 +214,69 @@ class CellDataFragment : Fragment() {
         val formattedDate = dateFormat.format(Date(timestamp))
         return formattedDate
     }
+
+//    private fun getSINR(context: Context): String {
+//        // SINR (Signal to Interference Noise Ratio) or SNR (Signal to Noise Ratio) when applicable
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+//
+//            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                val cellInfoList = telephonyManager.allCellInfo
+//
+//                if (cellInfoList != null && cellInfoList.isNotEmpty()) {
+//                    for (cellInfo in cellInfoList) {
+//                        if (cellInfo is CellInfoLte) {
+//                            val snr = cellInfo.cellSignalStrength.signalToNoiseRatio
+//                            if (snr != CellInfo.UNAVAILABLE) {
+//                                return "$snr dB"
+//                            }
+//                        }
+//                    }
+//                }
+//            } else {
+//                return "Not available yet"
+//            }
+//        }
+//        return "Not available yet"
+//    }
+
+    private fun getFrequencyBand(context: Context): String {
+        // Frequency Band (if available)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                val cellInfoList = telephonyManager.allCellInfo
+
+                if (cellInfoList != null && cellInfoList.isNotEmpty()) {
+                    for (cellInfo in cellInfoList) {
+                        when (cellInfo) {
+                            is CellInfoLte -> {
+                                val cellIdentity = cellInfo.cellIdentity as CellIdentityLte
+                                return "${cellIdentity.earfcn}"
+                            }
+                            is CellInfoWcdma -> {
+                                val cellIdentity = cellInfo.cellIdentity as CellIdentityWcdma
+                                return "${cellIdentity.uarfcn}"
+                            }
+                            is CellInfoGsm -> {
+                                val cellIdentity = cellInfo.cellIdentity as CellIdentityGsm
+                                return "${cellIdentity.arfcn}"
+                            }
+                        }
+                    }
+                }
+            } else {
+                return "Not available yet"
+            }
+        }
+        return "Not available yet"
+    }
+
+
+
+
+
 
 
 }
