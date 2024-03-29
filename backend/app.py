@@ -41,12 +41,9 @@ def get_statistics():
     data = request.json
     START_DATE = datetime.strptime(data['start_date'], '%d %b %Y %I:%M %p')
     END_DATE = datetime.strptime(data['end_date'], '%d %b %Y %I:%M %p')
-    try:
-        client_ip = request.remote_addr
-    except:
-        abort(400)
+    client_mac = data['user_mac']
 
-    statistics = CellData.query.filter_by(user_ip=client_ip).filter(
+    statistics = CellData.query.filter_by(user_mac=client_mac).filter(
         CellData.timestamp.between(START_DATE, END_DATE)).all()
 
     operators = {}
@@ -84,7 +81,7 @@ def get_statistics():
         signal_powers[net] = round(signal_powers[net] / count, 2) if count != 0 else 0
         sinr_snr[net] = round(sinr_snr[net] / count, 2) if count != 0 else 0
 
-    signal_power_device = [stat.signalPower for stat in statistics if stat.user_ip == client_ip]
+    signal_power_device = [stat.signalPower for stat in statistics if stat.user_mac == client_mac]
     signal_power_avg_device = round((sum(signal_power_device) / len(signal_power_device)), 2) if len(
         signal_power_device) != 0 else 0
 
