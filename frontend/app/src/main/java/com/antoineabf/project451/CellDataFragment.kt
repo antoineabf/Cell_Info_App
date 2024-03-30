@@ -23,10 +23,16 @@ import android.telephony.CellIdentityGsm
 import android.telephony.CellIdentityLte
 import android.telephony.CellIdentityWcdma
 import android.telephony.CellInfo
+import android.telephony.CellSignalStrengthCdma
+import android.telephony.CellSignalStrengthWcdma
 import androidx.core.app.ActivityCompat
+import java.lang.Math.pow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.round
 
 
 class CellDataFragment : Fragment() {
@@ -43,6 +49,7 @@ class CellDataFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,6 +78,7 @@ class CellDataFragment : Fragment() {
         networkTypeTextView?.text = getNetworkType(requireContext())
         frequencyBandTextView?.text=getFrequencyBand(requireContext())
         timestampTextView?.text = getTimestamp()
+        SINRTextView?.text = getSINR(requireContext())
 
 
 
@@ -215,31 +223,44 @@ class CellDataFragment : Fragment() {
         return formattedDate
     }
 
-//    private fun getSINR(context: Context): String {
-//        // SINR (Signal to Interference Noise Ratio) or SNR (Signal to Noise Ratio) when applicable
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-//
-//            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//                val cellInfoList = telephonyManager.allCellInfo
-//
-//                if (cellInfoList != null && cellInfoList.isNotEmpty()) {
-//                    for (cellInfo in cellInfoList) {
-//                        if (cellInfo is CellInfoLte) {
-//                            val snr = cellInfo.cellSignalStrength.signalToNoiseRatio
-//                            if (snr != CellInfo.UNAVAILABLE) {
-//                                return "$snr dB"
-//                            }
-//                        }
-//                    }
-//                }
-//            } else {
-//                return "Not available yet"
-//            }
-//        }
-//        return "Not available yet"
-//    }
+    private fun getSINR(context: Context): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                val cellInfoList = telephonyManager.allCellInfo
+
+                for (cellInfo in cellInfoList) {
+                    when (cellInfo) {
+                        is CellInfoGsm -> {
+                           return "Not available"
+                        }
+                        is CellInfoWcdma -> {
+                            // For 3G (UMTS/WCDMA)
+                            return "Not available"
+                        }
+                        is CellInfoLte -> {
+                            // For 4G (LTE)
+                            val lteCell = cellInfo.cellSignalStrength
+
+                            val rssnr = lteCell.rssnr // (RSSNR) in dBm
+
+
+
+                            return rssnr.toString() + " dB"
+
+                        }
+                        // Handle other cell types if necessary
+                    }
+                }
+            } else {
+                return "Not available yet"
+            }
+        }
+        return "Not available yet"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun getFrequencyBand(context: Context): String {
         // Frequency Band (if available)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -273,6 +294,12 @@ class CellDataFragment : Fragment() {
         return "Not available yet"
     }
 
+    fun convertdB(valdBm : Double): Double {
+        val snrmW = pow(10.0,valdBm/10.0)
+        val snrW = snrmW * 0.001
+        val snrdB = round(10.0 * log10(snrW))
+        return snrmW
+    }
 
 
 
