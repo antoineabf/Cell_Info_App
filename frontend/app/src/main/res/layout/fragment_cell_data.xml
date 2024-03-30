@@ -73,7 +73,7 @@
 
     <!-- SINR -->
     <LinearLayout
-        android:id="@+id/linear_layout_sinr"
+        android:id="@+id/linear_layout_snr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -86,14 +86,14 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="SINR: " />
+            android:text="SNR: " />
 
         <TextView
-            android:id="@+id/txtSINR"
+            android:id="@+id/txtSNR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="SINR Info" />
+            android:text="SNR Info" />
     </LinearLayout>
 
     <!-- Network Type -->
@@ -102,7 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/linear_layout_sinr"
+        app:layout_constraintTop_toBottomOf="@id/linear_layout_snr"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
