@@ -5,10 +5,17 @@ import android.os.Bundle
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.tabs.TabLayout
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+
 
 class MainActivity : AppCompatActivity() {
     private var tabLayout: TabLayout? = null
     private var tabsViewPager: ViewPager2? = null
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,5 +38,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }.attach()
+
     }
+
+
 }
