@@ -1,4 +1,4 @@
-from ..app import db, ma
+from backend.app import db, ma
 
 
 class CellData(db.Model):

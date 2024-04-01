@@ -6,12 +6,12 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:mysql123@localhost:3306/project451'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Abed12345@localhost:3306/project451'
 CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-from .model.celldata import CellData, celldata_schema
+from backend.model.celldata import CellData, celldata_schema
 
 
 @app.route('/cellData', methods=['POST'])
@@ -26,13 +26,15 @@ def add_cell_data():
             frequency_band=data['frequency_band'],
             cell_id=data['cell_id'],
             timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M %p'),
-            user_ip = request.remote_addr
+            user_ip = data['user_ip'],
+            user_mac = data['user_mac']
         )
         db.session.add(cell_data)
         db.session.commit()
         return jsonify({'message': celldata_schema.dump(cell_data)}), 201
 
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({'error': 'Something went wrong'}), 500
 
 
@@ -92,3 +94,9 @@ def get_statistics():
         "signal_power_avg_device": signal_power_avg_device,
         "sinr_snr": sinr_snr
     }), 200
+
+from flask import render_template
+
+@app.route('/')
+def index():
+    return render_template('index.html')

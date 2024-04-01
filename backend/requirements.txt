@@ -1,6 +1,8 @@
 blinker==1.7.0
+cffi==1.16.0
 click==8.1.7
 colorama==0.4.6
+cryptography==42.0.5
 Flask==3.0.2
 Flask-Cors==4.0.0
 flask-marshmallow==1.2.1
@@ -11,6 +13,7 @@ Jinja2==3.1.3
 MarkupSafe==2.1.5
 marshmallow==3.21.1
 packaging==24.0
+pycparser==2.22
 PyMySQL==1.1.0
 SQLAlchemy==2.0.29
 typing_extensions==4.10.0
