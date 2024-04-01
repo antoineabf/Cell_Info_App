@@ -18,4 +18,8 @@ class CellData {
     var cell_id: String? = null
     @SerializedName("timestamp")
     var timestamp: Date? = null
+    @SerializedName("user_ip")
+    var user_ip:String? = null
+    @SerializedName("user_mac")
+    var user_mac:String?=null
 }

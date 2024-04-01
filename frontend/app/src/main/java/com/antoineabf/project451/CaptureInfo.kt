@@ -17,7 +17,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.round
-
+import android.net.wifi.WifiManager
+import java.net.InetAddress
+import java.net.NetworkInterface
 public class CaptureInfo {
     fun getOperatorName(context: Context): String? {
         val manager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
@@ -55,9 +57,9 @@ public class CaptureInfo {
                     return maxSignalStrength.toString() + " dBm"
                 }
             } else {
-                return "Not available"
+                return "Not Available"
             }
-        return "Not available"
+        return "Not Available"
 
 
     }
@@ -72,11 +74,11 @@ public class CaptureInfo {
                     when (cellInfo) {
                         is CellInfoGsm -> {
                             //For 2G
-                            return "Not available"
+                            return "Not Available"
                         }
                         is CellInfoWcdma -> {
                             // For 3G (UMTS/WCDMA)
-                            return "Not available"
+                            return "Not Available"
                         }
                         is CellInfoLte -> {
                             // For 4G (LTE)
@@ -88,10 +90,10 @@ public class CaptureInfo {
                     }
                 }
             } else {
-                return "Not available"
+                return "Not Available"
             }
         }
-        return "Not available"
+        return "Not Available"
     }
     fun getNetworkType(context: Context): String {
         // from geeks4geeks
@@ -101,7 +103,7 @@ public class CaptureInfo {
         val mInfo = mConnectivityManager.activeNetworkInfo
 
         // If not connected, "-" will be displayed
-        if (mInfo == null || !mInfo.isConnected) return "not available"
+        if (mInfo == null || !mInfo.isConnected) return "Not Available"
 
         // If Connected to Wifi
         if (mInfo.type == ConnectivityManager.TYPE_WIFI) return "WIFI"
@@ -128,10 +130,10 @@ public class CaptureInfo {
                 TelephonyManager.NETWORK_TYPE_LTE,
                 TelephonyManager.NETWORK_TYPE_IWLAN, 19 -> "4G"
                 TelephonyManager.NETWORK_TYPE_NR -> "5G"
-                else -> "not available"
+                else -> "Not Available"
             }
         }
-        return "not available"
+        return "Not Available"
     }
     @RequiresApi(Build.VERSION_CODES.P)
     fun getFrequencyBand(context: Context): String {
@@ -161,9 +163,9 @@ public class CaptureInfo {
                 }
             }
         } else {
-            return "Not available"
+            return "Not Available"
         }
-        return "Not available"
+        return "Not Available"
     }
     fun getCellID(context: Context): String {
         val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
@@ -178,15 +180,15 @@ public class CaptureInfo {
                         is CellInfoGsm -> cellInfo.cellIdentity.cid.toString()
                         is CellInfoLte -> cellInfo.cellIdentity.ci.toString()
                         is CellInfoWcdma -> cellInfo.cellIdentity.cid.toString()
-                        else -> "Not available" // Handle other cell types or unknown cases
+                        else -> "Not Available" // Handle other cell types or unknown cases
                     }
                 }
             }
         } else {
 
-            return "Not available" // Default value if cell ID cannot be retrieved
+            return "Not Available" // Default value if cell ID cannot be retrieved
         }
-        return "not available"// Default value if cell ID cannot be retrieved
+        return "Not Available"// Default value if cell ID cannot be retrieved
     }
     fun getTimestamp(): String{
         val timestamp = System.currentTimeMillis()
@@ -194,6 +196,50 @@ public class CaptureInfo {
         val formattedDate = dateFormat.format(Date(timestamp))
         return formattedDate
     }
+    fun getMacAddress(): String {
+        try {
+            val interfaces = NetworkInterface.getNetworkInterfaces()
+            while (interfaces.hasMoreElements()) {
+                val networkInterface = interfaces.nextElement()
+                val mac = networkInterface.hardwareAddress
+                if (mac != null && mac.isNotEmpty()) {
+                    val stringBuilder = StringBuilder()
+                    for (byte in mac) {
+                        stringBuilder.append(String.format("%02X:", byte))
+                    }
+                    if (stringBuilder.isNotEmpty()) {
+                        stringBuilder.deleteCharAt(stringBuilder.length - 1)
+                    }
+                    return stringBuilder.toString()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return "Not Available"
+    }
+    fun getIPAddress(context: Context): String? {
+        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiInfo = wifiManager.connectionInfo
+        val ipAddress = wifiInfo.ipAddress
+
+        // Check if wifiInfo is not null and IP address is not 0
+        if (wifiInfo != null && ipAddress != 0) {
+            // Convert IP address from integer to human-readable format
+            return InetAddress.getByAddress(
+                byteArrayOf(
+                    (ipAddress and 0xff).toByte(),
+                    (ipAddress shr 8 and 0xff).toByte(),
+                    (ipAddress shr 16 and 0xff).toByte(),
+                    (ipAddress shr 24 and 0xff).toByte()
+                )
+            ).hostAddress
+        } else {
+            return "Not Available"
+        }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.P)
     fun generateInfo(context: Context): Array<String?> {
         val infoArray = arrayOf(
@@ -203,7 +249,9 @@ public class CaptureInfo {
             getNetworkType(context),
             getFrequencyBand(context),
             getCellID(context),
-            getTimestamp()
+            getTimestamp(),
+            getMacAddress(),
+            getIPAddress(context)
         )
         return infoArray
     }

@@ -1,14 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StatisticsFragment">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/startDateInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Start Datetime">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:onClick="showDateTimePicker"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/endDateInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="End Datetime">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:onClick="showDateTimePicker"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonSendDatetime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"/>
+
+    <!-- Statistics Section Header -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:text="Statistics:"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginTop="100dp"/>
 
-</FrameLayout>
+    <!-- Average Connectivity Time per Operator -->
+    <TextView
+        android:id="@+id/txtViewAvgConnectivityTimePerOperator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connectivity Time per Operator:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+    <!-- Placeholder for Connectivity Time per Operator -->
+    <TextView
+        android:id="@+id/txtConnectivityTimePerOperator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not Available"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Average Connectivity Time per Network Type -->
+    <TextView
+        android:id="@+id/txtViewAvgConnectivityTimePerNetworkType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connectivity Time per Network Type:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+    <!-- Placeholder for Connectivity Time per Network Type -->
+    <TextView
+        android:id="@+id/txtConnectivityTimePerNetworkType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not Available"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Average Signal Power per Network Type -->
+    <TextView
+        android:id="@+id/txtViewAvgSignalPowerPerNetworkType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Signal Power per Network Type:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+    <!-- Placeholder for Signal Power per Network Type -->
+    <TextView
+        android:id="@+id/txtSignalPowerPerNetworkType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not Available"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Average Signal Power per Device -->
+    <TextView
+        android:id="@+id/txtViewAvgSignalPowerPerDevice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Signal Power per Device:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+    <!-- Placeholder for Signal Power per Device -->
+    <TextView
+        android:id="@+id/txtSignalPowerPerDevice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not Available"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Average SNR per Network Type -->
+    <TextView
+        android:id="@+id/txtViewAvgSNRPerNetworkType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SNR per Network Type:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+    <!-- Placeholder for SNR per Network Type -->
+    <TextView
+        android:id="@+id/txtSNRPerNetworkType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not Available"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
