@@ -6,7 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Toto2003#@localhost:3306/project451'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost:3306/project451'
 CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
