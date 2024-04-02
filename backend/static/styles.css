@@ -1,0 +1,45 @@
+/* CSS styles */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f5ff; /* Light blue */
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        background-color: #fff; /* white */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50; /* Dark blue */
+    }
+
+    h2 {
+        color: #2980b9; /* Royal blue */
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #ecf0f1; /* Light blue-gray */
+    }
+
+
+    /* Add more specific styles as needed */
