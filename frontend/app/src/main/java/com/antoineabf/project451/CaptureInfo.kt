@@ -95,43 +95,30 @@ public class CaptureInfo {
         }
         return "Not Available"
     }
+    @RequiresApi(Build.VERSION_CODES.P)
     fun getNetworkType(context: Context): String {
-        // from geeks4geeks
+        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
-        // ConnectionManager instance
-        val mConnectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val mInfo = mConnectivityManager.activeNetworkInfo
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            val cellInfoList = telephonyManager.allCellInfo
 
-        // If not connected, "-" will be displayed
-        if (mInfo == null || !mInfo.isConnected) return "Not Available"
-
-        // If Connected to Wifi
-        if (mInfo.type == ConnectivityManager.TYPE_WIFI) return "WIFI"
-
-        // If Connected to Mobile
-        if (mInfo.type == ConnectivityManager.TYPE_MOBILE) {
-            return when (mInfo.subtype) {
-                TelephonyManager.NETWORK_TYPE_GPRS,
-                TelephonyManager.NETWORK_TYPE_EDGE,
-                TelephonyManager.NETWORK_TYPE_CDMA,
-                TelephonyManager.NETWORK_TYPE_1xRTT,
-                TelephonyManager.NETWORK_TYPE_IDEN,
-                TelephonyManager.NETWORK_TYPE_GSM -> "2G"
-                TelephonyManager.NETWORK_TYPE_UMTS,
-                TelephonyManager.NETWORK_TYPE_EVDO_0,
-                TelephonyManager.NETWORK_TYPE_EVDO_A,
-                TelephonyManager.NETWORK_TYPE_HSDPA,
-                TelephonyManager.NETWORK_TYPE_HSUPA,
-                TelephonyManager.NETWORK_TYPE_HSPA,
-                TelephonyManager.NETWORK_TYPE_EVDO_B,
-                TelephonyManager.NETWORK_TYPE_EHRPD,
-                TelephonyManager.NETWORK_TYPE_HSPAP,
-                TelephonyManager.NETWORK_TYPE_TD_SCDMA -> "3G"
-                TelephonyManager.NETWORK_TYPE_LTE,
-                TelephonyManager.NETWORK_TYPE_IWLAN, 19 -> "4G"
-                TelephonyManager.NETWORK_TYPE_NR -> "5G"
-                else -> "Not Available"
+            if (cellInfoList != null && cellInfoList.isNotEmpty()) {
+                for (cellInfo in cellInfoList) {
+                    when (cellInfo) {
+                        is CellInfoLte -> {
+                            return "4G"
+                        }
+                        is CellInfoWcdma -> {
+                            return "3G"
+                        }
+                        is CellInfoGsm -> {
+                            return "2G"
+                        }
+                    }
+                }
             }
+        } else {
+            return "Not Available"
         }
         return "Not Available"
     }
