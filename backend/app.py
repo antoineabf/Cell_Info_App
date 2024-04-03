@@ -1,15 +1,18 @@
+
 from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost:3306/project451'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Toto2003#@localhost:3306/project451'
 CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+socketio = SocketIO(app)
 
 from .model.celldata import celldata_schema, CellData
 
@@ -102,3 +105,74 @@ from flask import render_template
 @app.route('/')
 def index():
     return render_template("index.html")
+
+# Maintain a dictionary to store currently connected devices with their IP addresses
+connected_devices = {}
+
+# Maintain a dictionary to store previously connected devices with their IP addresses
+previous_devices = {}
+
+# Maintain a dictionary to store per-device statistics
+device_statistics = {}
+
+# Event handler for when a client connects
+@socketio.on('connect')
+def handle_connect():
+    print('connected')
+
+
+# Event handler for when a client disconnects
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('disconnected')
+    user_sid = request.sid
+    if user_sid in connected_devices:
+        if user_sid not in previous_devices:
+            previous_devices[user_sid] = connected_devices[user_sid]
+        del connected_devices[user_sid]
+    emit('disconnection_ack', {'message': 'Disconnected from server'})
+
+@socketio.on('user_data')
+def handle_user_data(data):
+    print("test")
+    user_ip = data.get('user_ip')
+    user_mac = data.get('user_mac')
+    print(user_ip + " " + user_mac)
+    user_sid = request.sid
+
+    # If the device is in previous_devices, move it to connected_devices
+    for key, device_data in previous_devices.items():
+        if device_data["user_ip"] == user_ip and device_data["user_mac"] == user_mac:
+            del previous_devices[key]  # Delete the matching entry
+            break  # Exit loop since the device is found
+
+    connected_devices[user_sid] = {"user_ip": user_ip, "user_mac": user_mac}
+
+
+
+
+@app.route('/centralized-statistics', methods=['GET'])
+def centralized_statistics():
+    connected_devices_json = {}
+    previous_devices_json = {}
+
+    # Convert connected_devices dictionary to JSON serializable format
+    for user_sid, data in connected_devices.items():
+        connected_devices_json[user_sid] = {
+            'user_ip': data.get('user_ip'),
+            'user_mac': data.get('user_mac')
+        }
+
+    # Convert previous_devices dictionary to JSON serializable format
+    for user_sid, data in previous_devices.items():
+        previous_devices_json[user_sid] = {
+            'user_ip': data.get("user_ip"),
+            'user_mac': data.get("user_mac")
+        }
+
+    return jsonify({
+        "connected_devices": len(connected_devices_json),
+        "previous_devices": previous_devices_json,
+        "current_devices": connected_devices_json,
+        "device_statistics": device_statistics
+    })
