@@ -225,8 +225,6 @@ public class CaptureInfo {
             return "Not Available"
         }
     }
-
-
     @RequiresApi(Build.VERSION_CODES.P)
     fun generateInfo(context: Context): Array<String?> {
         val infoArray = arrayOf(
