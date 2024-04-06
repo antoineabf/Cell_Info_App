@@ -113,6 +113,7 @@ previous_devices = {}
 device_statistics = {}
 
 import time
+'''
 # Event handler for when a client connects
 @socketio.on('connect')
 def handle_connect():
@@ -125,6 +126,30 @@ def handle_connect():
         if cell_data is not None:
             connected_devices[user_sid] = cell_data
         #print(connected_devices)
+'''
+
+# Event handler for when a client connects
+@socketio.on('connect')
+def handle_connect():
+    user_sid = request.sid
+    user_ip_request = request.remote_addr  # Get the IP address of the client
+
+    # Check if the user is not already connected
+    if user_sid not in connected_devices:
+        emit('connection_ack', {'message': 'Connected to server'})
+
+        # Initialize a flag to track if data has been sent
+        data_sent_ack_received = False
+
+        # Listen for the "data_sent_ack" event
+        @socketio.on('data_sent_ack')
+        def handle_data_sent_ack(data):
+            nonlocal data_sent_ack_received
+            data_sent_ack_received = True
+            # Now execute the query and update the connected devices
+            cell_data = db.session.query(CellData).filter_by(user_ip=user_ip_request).first()
+            if cell_data is not None:
+                connected_devices[user_sid] = cell_data
 
 # Event handler for when a client disconnects
 @socketio.on('disconnect')

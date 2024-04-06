@@ -22,6 +22,8 @@ socket.on('connection_ack', (data) => {
     })
     .then(response => {
         console.log('Cell data added successfully:', response.data.message);
+        // Emit data sent acknowledgment to the server
+        socket.emit('data_sent_ack', { message: 'Cell data received and processed successfully' });
     })
     .catch(error => {
         console.error('Error adding cell data:', error);
