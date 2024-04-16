@@ -120,19 +120,20 @@ device_statistics = {}
 # In your centralized_statistics route or any other appropriate place
 def fetch_previous_devices():
     # Query for the latest entry for each MAC address
-    latest_devices_query = db.session.query(CellData.user_mac,
+    latest_devices_query = db.session.query(CellData.user_ip,
                                             func.max(CellData.timestamp).label('max_timestamp')). \
-        group_by(CellData.user_mac).subquery()
+        group_by(CellData.user_ip).subquery()
 
     # Join with CellData table to get the complete rows
     latest_devices = db.session.query(CellData). \
         join(latest_devices_query,
-             db.and_(CellData.user_mac == latest_devices_query.c.user_mac,
+             db.and_(CellData.user_ip == latest_devices_query.c.user_ip,
                      CellData.timestamp == latest_devices_query.c.max_timestamp)).all()
 
     # Populate the previous_devices dictionary
     for device in latest_devices:
-        previous_devices[device.user_mac] = {"user_ip": device.user_ip, "user_mac": device.user_mac}
+        if all(device.user_ip != device_info["user_ip"] for device_info in connected_devices.values()):
+            previous_devices[device.user_ip] = {"user_ip": device.user_ip, "user_mac": device.user_mac}
 
 
 # Event handler for when a client connects
@@ -149,16 +150,15 @@ def handle_disconnect():
     user_data = connected_devices.get(session_id)
 
     if user_data:
-        user_mac = user_data.get('user_mac')
-        if user_mac:
+        user_ip = user_data.get('user_ip')
+        if user_ip:
             # Move the device from connected_devices to previous_devices
-            previous_devices[user_mac] = connected_devices.pop(session_id)
+            previous_devices[user_ip] = connected_devices.pop(session_id)
 
-            print("User IP:", previous_devices[user_mac]['user_ip'])
-            print("User MAC:", user_mac)
+            print("User IP:", previous_devices[user_ip]['user_ip'])
+            print("User MAC:", previous_devices[user_ip]['user_mac'])
 
     emit('disconnection_ack', {'message': 'Disconnected from server'})
-
 
 
 @socketio.on('user_data')
@@ -171,21 +171,20 @@ def handle_user_data(data):
     connected_devices[session_id] = {'user_ip': user_ip, 'user_mac': user_mac}
 
     # Query the database to get the latest entry for the current device
-    latest_device = CellData.query.filter_by(user_mac=user_mac).order_by(CellData.timestamp.desc()).first()
+    latest_device = CellData.query.filter_by(user_ip=user_ip).order_by(CellData.timestamp.desc()).first()
 
     if latest_device:
         # Add the latest device to previous_devices
-        previous_devices[user_mac] = {"user_ip": latest_device.user_ip, "user_mac": latest_device.user_mac}
+        previous_devices[user_ip] = {"user_ip": latest_device.user_ip, "user_mac": latest_device.user_mac}
     else:
         # If no entry found, use the provided IP
-        previous_devices[user_mac] = {"user_ip": user_ip, "user_mac": user_mac}
+        previous_devices[user_ip] = {"user_ip": user_ip, "user_mac": user_mac}
 
     # If the device is in previous_devices, move it to connected_devices
-    if user_mac in previous_devices:
-        del previous_devices[user_mac]  # Delete the matching entry
+    if user_ip in previous_devices:
+        previous_devices.pop(user_ip)  # Delete the matching entry
 
     connected_devices[session_id] = {"user_ip": user_ip, "user_mac": user_mac}
-
 
 
 @app.route('/centralized-statistics', methods=['GET'])
@@ -202,8 +201,8 @@ def centralized_statistics():
         }
 
     # Convert previous_devices dictionary to JSON serializable format
-    for user_mac, data in previous_devices.items():
-        previous_devices_json[user_mac] = {
+    for user_ip, data in previous_devices.items():
+        previous_devices_json[user_ip] = {
             'user_ip': data.get("user_ip"),
             'user_mac': data.get("user_mac")
         }
