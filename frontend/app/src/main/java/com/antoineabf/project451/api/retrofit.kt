@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.POST
 
 object CellDataService {
-    private const val API_URL: String = "http://10.0.2.2:5000"
+    private const val API_URL: String = "http://10.169.2.40:5000"
     fun CellDataApi():CellData {
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(API_URL)

@@ -8,6 +8,8 @@ import com.google.android.material.tabs.TabLayout
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.util.Log
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         try {
-            val url = "192.168.1.110"
+            val url = "10.169.2.40"
 
             mSocket = IO.socket("http://$url:5000")
             mSocket?.connect()
@@ -64,6 +66,14 @@ class MainActivity : AppCompatActivity() {
                 mSocket?.emit("user_data", data)
 
             }?.on(Socket.EVENT_DISCONNECT) {
+                val user_ip = getIPAddress(this)
+                val user_mac = getMacAddress()
+                val data = JSONObject()
+                data.put("user_ip", user_ip)
+                data.put("user_mac", user_mac)
+                mSocket?.emit(Socket.EVENT_DISCONNECT, data)
+
+
                 Log.d("disconnectionTag1", "Disconnected from server")
 
             }
@@ -80,7 +90,6 @@ class MainActivity : AppCompatActivity() {
         mSocket?.disconnect()
     }
     fun getMacAddress(): String {
-        try {
             val interfaces = NetworkInterface.getNetworkInterfaces()
             while (interfaces.hasMoreElements()) {
                 val networkInterface = interfaces.nextElement()
@@ -96,30 +105,49 @@ class MainActivity : AppCompatActivity() {
                     return stringBuilder.toString()
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+       return "02:00:00:00:00:00"
+
+    }
+    fun getIPAddress(context: Context): String {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+        if (networkCapabilities != null && networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+            val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val wifiInfo = wifiManager.connectionInfo
+            val ipAddress = wifiInfo.ipAddress
+
+            if (ipAddress != 0) {
+                // Convert IP address from integer to human-readable format
+                return InetAddress.getByAddress(
+                    byteArrayOf(
+                        (ipAddress and 0xff).toByte(),
+                        (ipAddress shr 8 and 0xff).toByte(),
+                        (ipAddress shr 16 and 0xff).toByte(),
+                        (ipAddress shr 24 and 0xff).toByte()
+                    )
+                ).hostAddress
+            }
+        } else {
+            try {
+                val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+                while (networkInterfaces.hasMoreElements()) {
+                    val networkInterface = networkInterfaces.nextElement()
+                    val addresses = networkInterface.inetAddresses
+                    while (addresses.hasMoreElements()) {
+                        val address = addresses.nextElement()
+                        if (!address.isLoopbackAddress && address.hostAddress.indexOf(':') < 0) {
+                            // Ensure it's not a loopback address and IPv6
+                            return address.hostAddress
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         return "Not Available"
-    }
-    fun getIPAddress(context: Context): String? {
-        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val wifiInfo = wifiManager.connectionInfo
-        val ipAddress = wifiInfo.ipAddress
-
-        // Check if wifiInfo is not null and IP address is not 0
-        if (wifiInfo != null && ipAddress != 0) {
-            // Convert IP address from integer to human-readable format
-            return InetAddress.getByAddress(
-                byteArrayOf(
-                    (ipAddress and 0xff).toByte(),
-                    (ipAddress shr 8 and 0xff).toByte(),
-                    (ipAddress shr 16 and 0xff).toByte(),
-                    (ipAddress shr 24 and 0xff).toByte()
-                )
-            ).hostAddress
-        } else {
-            return "Not Available"
-        }
     }
 
 
