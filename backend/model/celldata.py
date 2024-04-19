@@ -3,15 +3,15 @@ from ..app import db, ma
 
 class CellData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    operator = db.Column(db.String(50), nullable=False)
-    signalPower = db.Column(db.Float, nullable=False)
-    sinr_snr = db.Column(db.Float, nullable=False)
-    networkType = db.Column(db.String(20), nullable=False)
+    operator = db.Column(db.String(50), nullable=True)
+    signalPower = db.Column(db.Float, nullable=True)
+    sinr_snr = db.Column(db.Float, nullable=True)
+    networkType = db.Column(db.String(20), nullable=True)
     frequency_band = db.Column(db.String(20), nullable=True)
-    cell_id = db.Column(db.String(50), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False)
-    user_ip = db.Column(db.String(30), nullable=False)
-    user_mac = db.Column(db.String(30), nullable=False)
+    cell_id = db.Column(db.String(50), nullable=True)
+    timestamp = db.Column(db.DateTime, nullable=True)
+    user_ip = db.Column(db.String(30), nullable=True)
+    user_mac = db.Column(db.String(30), nullable=True)
 
     def __init__(self, operator, signalPower, sinr_snr, networkType, frequency_band, cell_id, timestamp, user_ip, user_mac):
         self.operator = operator

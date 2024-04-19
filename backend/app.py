@@ -22,15 +22,15 @@ def add_cell_data():
     try:
         data = request.json
         cell_data = CellData(
-            operator=data['operator'],
-            signalPower=data['signalPower'],
-            sinr_snr=data['sinr_snr'],
-            networkType=data['networkType'],
-            frequency_band=data['frequency_band'],
-            cell_id=data['cell_id'],
-            timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M %p'),
-            user_ip=data['user_ip'],
-            user_mac=data['user_mac']
+            operator=data['operator'] if 'operator' in request.json else None,
+            signalPower=data['signalPower'] if 'signalPower' in request.json else None,
+            sinr_snr=data['sinr_snr'] if 'sinr_snr' in request.json else None,
+            networkType=data['networkType'] if 'networkType' in request.json else None,
+            frequency_band=data['frequency_band'] if 'frequency_band' in request.json else None,
+            cell_id=data['cell_id'] if 'cell_id' in request.json else None,
+            timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M %p') if 'timestamp' in request.json else None,
+            user_ip=data['user_ip'] if 'user_ip' in request.json else None,
+            user_mac=data['user_mac'] if 'user_mac' in request.json else None
         )
         db.session.add(cell_data)
         db.session.commit()
