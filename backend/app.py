@@ -5,10 +5,11 @@ from flask_marshmallow import Marshmallow
 from datetime import datetime
 from flask_socketio import SocketIO, emit
 from sqlalchemy import func
+from flask import render_template
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Toto2003#@localhost:3306/project451'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:mysql123@localhost:3306/project451'
 CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -97,10 +98,7 @@ def get_statistics():
         "signal_power_avg_device": signal_power_avg_device,
         "sinr_snr": sinr_snr
     }), 200
-
-
-from flask import render_template
-
+    
 
 @app.route('/')
 def index():
