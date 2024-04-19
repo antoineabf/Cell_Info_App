@@ -11,6 +11,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import android.Manifest
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -26,6 +28,32 @@ class CellDataFragment : Fragment() {
     private var cellIDTextView: TextView? = null
     private var timestampTextView: TextView? = null
     private val PERMISSION_REQUEST_CODE = 123
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateInfoRunnable = object : Runnable {
+        @RequiresApi(Build.VERSION_CODES.P)
+        override fun run() {
+            // Update the TextViews with new information
+            assignInfoToTextViews(requireView())
+
+            // Schedule next execution after 10 seconds
+            handler.postDelayed(this, 10 * 1000)
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Start updating the fragment every 10 seconds
+        handler.postDelayed(updateInfoRunnable, 10 * 1000)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Remove the callbacks to prevent memory leaks
+        handler.removeCallbacks(updateInfoRunnable)
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +74,9 @@ class CellDataFragment : Fragment() {
             // Call function to update text views
             updateInfo()
         }
+
         requestPermissions(activity)
+
         assignInfoToTextViews(view)
         return view
 

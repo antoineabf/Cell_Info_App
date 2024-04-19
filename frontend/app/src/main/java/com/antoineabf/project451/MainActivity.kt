@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity() {
         @RequiresApi(Build.VERSION_CODES.P)
         override fun run() {
             postInfo()
-
             handler.postDelayed(this, 10 * 1000) // Schedule next execution after 10 seconds
         }
     }
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         try {
-            val url = "10.169.2.71"
+            val url = "10.169.11.27"
 
             mSocket = IO.socket("http://$url:5000")
             mSocket?.connect()

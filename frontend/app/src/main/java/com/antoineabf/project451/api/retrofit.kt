@@ -8,7 +8,7 @@ import retrofit2.http.POST
 import com.antoineabf.project451.api.model.CellData
 
 object CellDataService {
-    private const val API_URL: String = "http://10.169.2.71:5000"
+    private const val API_URL: String = "http://10.169.11.27:5000"
     fun CellDataApi():Cell {
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(API_URL)
