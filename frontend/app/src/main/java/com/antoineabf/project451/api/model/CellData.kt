@@ -6,7 +6,7 @@ import java.util.Date
 class CellData {
     @SerializedName("operator")
     var operator: String? = null
-    @SerializedName("signal_power")
+    @SerializedName("signalPower")
     var signal_power: Float? = null
     @SerializedName("sinr_snr")
     var sinr_snr: Float? = null

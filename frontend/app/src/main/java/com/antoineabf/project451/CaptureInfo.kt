@@ -12,6 +12,7 @@ import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import android.Manifest
+import android.net.NetworkCapabilities
 import java.lang.Math.pow
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -184,46 +185,64 @@ public class CaptureInfo {
         return formattedDate
     }
     fun getMacAddress(): String {
-        try {
-            val interfaces = NetworkInterface.getNetworkInterfaces()
-            while (interfaces.hasMoreElements()) {
-                val networkInterface = interfaces.nextElement()
-                val mac = networkInterface.hardwareAddress
-                if (mac != null && mac.isNotEmpty()) {
-                    val stringBuilder = StringBuilder()
-                    for (byte in mac) {
-                        stringBuilder.append(String.format("%02X:", byte))
-                    }
-                    if (stringBuilder.isNotEmpty()) {
-                        stringBuilder.deleteCharAt(stringBuilder.length - 1)
-                    }
-                    return stringBuilder.toString()
+        val interfaces = NetworkInterface.getNetworkInterfaces()
+        while (interfaces.hasMoreElements()) {
+            val networkInterface = interfaces.nextElement()
+            val mac = networkInterface.hardwareAddress
+            if (mac != null && mac.isNotEmpty()) {
+                val stringBuilder = StringBuilder()
+                for (byte in mac) {
+                    stringBuilder.append(String.format("%02X:", byte))
                 }
+                if (stringBuilder.isNotEmpty()) {
+                    stringBuilder.deleteCharAt(stringBuilder.length - 1)
+                }
+                return stringBuilder.toString()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        }
+        return "02:00:00:00:00:00"
+
+    }
+    fun getIPAddress(context: Context): String {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+        if (networkCapabilities != null && networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+            val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val wifiInfo = wifiManager.connectionInfo
+            val ipAddress = wifiInfo.ipAddress
+
+            if (ipAddress != 0) {
+                // Convert IP address from integer to human-readable format
+                return InetAddress.getByAddress(
+                    byteArrayOf(
+                        (ipAddress and 0xff).toByte(),
+                        (ipAddress shr 8 and 0xff).toByte(),
+                        (ipAddress shr 16 and 0xff).toByte(),
+                        (ipAddress shr 24 and 0xff).toByte()
+                    )
+                ).hostAddress
+            }
+        } else {
+            try {
+                val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+                while (networkInterfaces.hasMoreElements()) {
+                    val networkInterface = networkInterfaces.nextElement()
+                    val addresses = networkInterface.inetAddresses
+                    while (addresses.hasMoreElements()) {
+                        val address = addresses.nextElement()
+                        if (!address.isLoopbackAddress && address.hostAddress.indexOf(':') < 0) {
+                            // Ensure it's not a loopback address and IPv6
+                            return address.hostAddress
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         return "Not Available"
-    }
-    fun getIPAddress(context: Context): String? {
-        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val wifiInfo = wifiManager.connectionInfo
-        val ipAddress = wifiInfo.ipAddress
-
-        // Check if wifiInfo is not null and IP address is not 0
-        if (wifiInfo != null && ipAddress != 0) {
-            // Convert IP address from integer to human-readable format
-            return InetAddress.getByAddress(
-                byteArrayOf(
-                    (ipAddress and 0xff).toByte(),
-                    (ipAddress shr 8 and 0xff).toByte(),
-                    (ipAddress shr 16 and 0xff).toByte(),
-                    (ipAddress shr 24 and 0xff).toByte()
-                )
-            ).hostAddress
-        } else {
-            return "Not Available"
-        }
     }
     @RequiresApi(Build.VERSION_CODES.P)
     fun generateInfo(context: Context): Array<String?> {
