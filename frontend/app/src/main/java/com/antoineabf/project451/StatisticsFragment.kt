@@ -105,24 +105,57 @@ class StatisticsFragment : Fragment() {
                 val statistics = response.body()
                 if (statistics != null) {
                     // Display operator
-                    val operatorText = statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
-                    connectivityTimePerOperatorTextView?.text = operatorText
+                    if (statistics.operator?.isNotEmpty() == true) {
+                        val operatorText =
+                            statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                                ?: "Not Available"
+                        connectivityTimePerOperatorTextView?.text = operatorText
+                    }
+                    else{
+                        connectivityTimePerOperatorTextView?.text="Not Available"
+                    }
 
                     // Display network type
-                    val networkTypeText = statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
-                    connectivityTimePerNetworkTypeTextView?.text = networkTypeText
+                    if (statistics.networkType?.isNotEmpty() == true) {
+                        val networkTypeText =
+                            statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                                ?: "Not Available"
+                        connectivityTimePerNetworkTypeTextView?.text = networkTypeText
+                    }
+                    else{
+                        connectivityTimePerNetworkTypeTextView?.text="Not Available"
+                    }
 
                     // Display signal powers
-                    val signalPowersText = statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
-                    signalPowerPerNetworkTypeTextView?.text = signalPowersText
+                    if (statistics.signalPowers?.isNotEmpty() == true) {
+                        val signalPowersText =
+                            statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                                ?: "Not Available"
+                        signalPowerPerNetworkTypeTextView?.text = signalPowersText
+                    }
+                    else{
+                        signalPowerPerNetworkTypeTextView?.text="Not Available"
+                    }
 
                     // Display signal power average
-                    val signalPowerAvg = statistics.signalPowerAvg ?: "Not Available"
-                    signalPowerPerDeviceTextView?.text = "$signalPowerAvg"
+                    if (statistics.signalPowerAvg?.toInt() != 0) {
+                        val signalPowerAvg = statistics.signalPowerAvg ?: "Not Available"
+                        signalPowerPerDeviceTextView?.text = "$signalPowerAvg"
+                    }
+                    else{
+                        signalPowerPerDeviceTextView?.text="Not Available"
+                    }
 
                     // Display SINR/SNR
-                    val sinrSNRText = statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
-                    SNRPerNetworkTypeTextView?.text = sinrSNRText
+                    if(statistics.sinrSNR?.isNotEmpty() == true) {
+                        val sinrSNRText =
+                            statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                                ?: "Not Available"
+                        SNRPerNetworkTypeTextView?.text = sinrSNRText
+                    }
+                    else{
+                        SNRPerNetworkTypeTextView?.text ="Not Available"
+                    }
 
                 } else {
                     connectivityTimePerOperatorTextView?.text="Not Available"
