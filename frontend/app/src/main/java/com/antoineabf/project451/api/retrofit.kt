@@ -10,7 +10,7 @@ import com.antoineabf.project451.api.model.Statistics
 import com.antoineabf.project451.api.model.infoForStat
 
 object CellDataService {
-    private const val API_URL: String = "http://10.169.11.27:5000"
+    private const val API_URL: String = "http://172.20.10.3:5000"
     fun CellDataApi():Cell {
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(API_URL)

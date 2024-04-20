@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         try {
-            val url = "10.169.11.27"
+            val url = "172.20.10.3"
 
             mSocket = IO.socket("http://$url:5000")
             mSocket?.connect()

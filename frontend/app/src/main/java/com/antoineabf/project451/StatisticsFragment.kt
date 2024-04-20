@@ -102,18 +102,38 @@ class StatisticsFragment : Fragment() {
         CellDataService.CellDataApi().get_statistics(info).enqueue(object:
             Callback<Statistics>{
             override fun onResponse(call: Call<Statistics>, response: Response<Statistics>) {
-                connectivityTimePerOperatorTextView?.text = response.body()?.operator;
-                connectivityTimePerNetworkTypeTextView?.text = response.body()?.networkType;
-                signalPowerPerNetworkTypeTextView?.text = response.body()?.signalPower.toString();
-                signalPowerPerDeviceTextView?.text = response.body()?.signalPowerAvg.toString();
-                SNRPerNetworkTypeTextView?.text = response.body()?.sinrSNR.toString();
-                Log.d("cc",response.body()?.operator.toString());
+                val statistics = response.body()
+                if (statistics != null) {
+                    // Display operator
+                    val operatorText = statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    connectivityTimePerOperatorTextView?.text = operatorText
+
+                    // Display network type
+                    val networkTypeText = statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    connectivityTimePerNetworkTypeTextView?.text = networkTypeText
+
+                    // Display signal powers
+                    val signalPowersText = statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    signalPowerPerNetworkTypeTextView?.text = signalPowersText
+
+                    // Display signal power average
+                    val signalPowerAvg = statistics.signalPowerAvg ?: "N/A"
+                    signalPowerPerDeviceTextView?.text = "$signalPowerAvg"
+
+                    // Display SINR/SNR
+                    val sinrSNRText = statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    SNRPerNetworkTypeTextView?.text = sinrSNRText
+
+                } else {
+                    // Handle null response body
+                }
             }
 
             override fun onFailure(call: Call<Statistics>, t: Throwable) {
                 return;
             }
-            })
+        });
+
     }
 
 

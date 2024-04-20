@@ -5,13 +5,17 @@ import com.google.gson.annotations.SerializedName
 class Statistics {
 
     @SerializedName("operators")
-    var operator: String? = null
+    var operator: Map<String, Float>? = null
+
     @SerializedName("network_types")
-    var networkType: String? = null
+    var networkType: Map<String, Float>? = null
+
     @SerializedName("signal_powers")
-    var signalPower: Float? = null
+    var signalPowers: Map<String, Float>? = null
+
     @SerializedName("signal_power_avg_device")
     var signalPowerAvg: Float? = null
+
     @SerializedName("sinr_snr")
-    var sinrSNR: Float? = null
+    var sinrSNR: Map<String, Float>? = null
 }
