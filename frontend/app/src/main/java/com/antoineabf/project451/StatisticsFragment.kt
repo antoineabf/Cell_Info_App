@@ -1,8 +1,11 @@
 package com.antoineabf.project451
 
+import com.antoineabf.project451.api.CellDataService
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +13,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import com.antoineabf.project451.api.model.Statistics
+import com.antoineabf.project451.api.model.infoForStat
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class StatisticsFragment : Fragment() {
@@ -45,10 +53,9 @@ class StatisticsFragment : Fragment() {
             showDateTimePicker(editTextEndDate)
         }
 
-        buttonSendDatetime.setOnClickListener {
-            val startDate = editTextStartDate.text.toString()
-            val endDate = editTextEndDate.text.toString()
-            println("Start Date: $startDate, End Date: $endDate")
+        buttonSendDatetime.setOnClickListener{
+            val context: Context = requireContext()
+            getStatistics(context)
         }
 
         return view
@@ -85,6 +92,30 @@ class StatisticsFragment : Fragment() {
         )
         datePickerDialog.show()
     }
+
+    fun getStatistics(context: Context){
+        val info = infoForStat();
+        val ip = CaptureInfo().getIPAddress(context);
+        info.userIP = ip;
+        info.start = editTextStartDate.text.toString();
+        info.end = editTextEndDate.text.toString();
+        CellDataService.CellDataApi().get_statistics(info).enqueue(object:
+            Callback<Statistics>{
+            override fun onResponse(call: Call<Statistics>, response: Response<Statistics>) {
+                connectivityTimePerOperatorTextView?.text = response.body()?.operator;
+                connectivityTimePerNetworkTypeTextView?.text = response.body()?.networkType;
+                signalPowerPerNetworkTypeTextView?.text = response.body()?.signalPower.toString();
+                signalPowerPerDeviceTextView?.text = response.body()?.signalPowerAvg.toString();
+                SNRPerNetworkTypeTextView?.text = response.body()?.sinrSNR.toString();
+                Log.d("cc",response.body()?.operator.toString());
+            }
+
+            override fun onFailure(call: Call<Statistics>, t: Throwable) {
+                return;
+            }
+            })
+    }
+
 
 
 }

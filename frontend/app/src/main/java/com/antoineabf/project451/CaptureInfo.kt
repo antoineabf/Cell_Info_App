@@ -180,7 +180,7 @@ public class CaptureInfo {
     }
     fun getTimestamp(): String{
         val timestamp = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("dd MMM yyyy hh:mm:ss a", Locale.getDefault())
         val formattedDate = dateFormat.format(Date(timestamp))
         return formattedDate
     }

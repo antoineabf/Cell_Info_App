@@ -6,10 +6,11 @@ from datetime import datetime
 from flask_socketio import SocketIO, emit
 from sqlalchemy import func
 from flask import render_template
+from .db_config import DB_CONFIG
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:mysql123@localhost:3306/project451'
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
 CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -29,10 +30,14 @@ def add_cell_data():
             networkType=data['networkType'] if 'networkType' in request.json else None,
             frequency_band=data['frequency_band'] if 'frequency_band' in request.json else None,
             cell_id=data['cell_id'] if 'cell_id' in request.json else None,
-            timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M %p') if 'timestamp' in request.json else None,
+            timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M:%S %p') if 'timestamp' in request.json else None,
             user_ip=data['user_ip'] if 'user_ip' in request.json else None,
             user_mac=data['user_mac'] if 'user_mac' in request.json else None
         )
+
+        if cell_data.signalPower == None and cell_data.sinr_snr == None and cell_data.networkType == None and cell_data.frequency_band == None and cell_data.cell_id == None:
+            return jsonify({'message': "Empty entry"}), 404
+
         db.session.add(cell_data)
         db.session.commit()
         return jsonify({'message': celldata_schema.dump(cell_data)}), 201
@@ -45,13 +50,14 @@ def add_cell_data():
 @app.route('/statistics', methods=['POST'])
 def get_statistics():
     data = request.json
-    START_DATE = datetime.strptime(data['start_date'], '%d %b %Y %I:%M %p')
-    END_DATE = datetime.strptime(data['end_date'], '%d %b %Y %I:%M %p')
-    client_mac = data['user_mac']
+    START_DATE = datetime.strptime(data['start_date'], '%Y-%m-%d %H:%M')
+    END_DATE = datetime.strptime(data['end_date'], '%Y-%m-%d %H:%M')
+    client_ip = data['user_ip']
+    
 
-    statistics = CellData.query.filter_by(user_mac=client_mac).filter(
+    statistics = CellData.query.filter_by(user_ip=client_ip).filter(
         CellData.timestamp.between(START_DATE, END_DATE)).all()
-
+    
     operators = {}
     network_types = {}
 
@@ -87,9 +93,11 @@ def get_statistics():
         signal_powers[net] = round(signal_powers[net] / count, 2) if count != 0 else 0
         sinr_snr[net] = round(sinr_snr[net] / count, 2) if count != 0 else 0
 
-    signal_power_device = [stat.signalPower for stat in statistics if stat.user_mac == client_mac]
+    signal_power_device = [stat.signalPower for stat in statistics if stat.user_ip == client_ip]
     signal_power_avg_device = round((sum(signal_power_device) / len(signal_power_device)), 2) if len(
         signal_power_device) != 0 else 0
+    
+    print(operators)
 
     return jsonify({
         "operators": operators,

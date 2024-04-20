@@ -6,6 +6,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 import com.antoineabf.project451.api.model.CellData
+import com.antoineabf.project451.api.model.Statistics
+import com.antoineabf.project451.api.model.infoForStat
 
 object CellDataService {
     private const val API_URL: String = "http://10.169.11.27:5000"
@@ -20,6 +22,6 @@ object CellDataService {
         @POST("/cellData")
         fun add_cell_data(@Body cellData: CellData): Call<Any>
         @POST("/statistics")
-        fun get_statistics(): Call<Any>
+        fun get_statistics(@Body info: infoForStat): Call<Statistics>
     }
 }
