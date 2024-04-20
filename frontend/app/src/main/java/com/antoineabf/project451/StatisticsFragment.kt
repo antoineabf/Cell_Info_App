@@ -105,27 +105,37 @@ class StatisticsFragment : Fragment() {
                 val statistics = response.body()
                 if (statistics != null) {
                     // Display operator
-                    val operatorText = statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    val operatorText = statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
                     connectivityTimePerOperatorTextView?.text = operatorText
 
                     // Display network type
-                    val networkTypeText = statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    val networkTypeText = statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
                     connectivityTimePerNetworkTypeTextView?.text = networkTypeText
 
                     // Display signal powers
-                    val signalPowersText = statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    val signalPowersText = statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
                     signalPowerPerNetworkTypeTextView?.text = signalPowersText
 
                     // Display signal power average
-                    val signalPowerAvg = statistics.signalPowerAvg ?: "N/A"
+                    val signalPowerAvg = statistics.signalPowerAvg ?: "Not Available"
                     signalPowerPerDeviceTextView?.text = "$signalPowerAvg"
 
                     // Display SINR/SNR
-                    val sinrSNRText = statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "N/A"
+                    val sinrSNRText = statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" } ?: "Not Available"
                     SNRPerNetworkTypeTextView?.text = sinrSNRText
 
                 } else {
-                    // Handle null response body
+                    connectivityTimePerOperatorTextView?.text="Not Available"
+                    connectivityTimePerNetworkTypeTextView?.text="Not Available"
+                    signalPowerPerNetworkTypeTextView?.text="Not Available"
+                    signalPowerPerDeviceTextView?.text ="Not Available"
+                    SNRPerNetworkTypeTextView?.text = " Not Available"
+
+
+
+
+
+
                 }
             }
 
