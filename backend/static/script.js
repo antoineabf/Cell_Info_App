@@ -25,7 +25,45 @@ function fetchCentralizedStatistics() {
                 `;
             });
 
-            document.getElementById('devicestatistics').textContent = data.device_statistics;
+            // Update for device statistics
+            let stats = data.device_statistics;
+            let networkTypesHtml = '';
+            for (const [key, value] of Object.entries(stats.network_types)) {
+                networkTypesHtml += `<li>${key}: ${value}%</li>`;
+            }
+            if (!networkTypesHtml) networkTypesHtml = '<li>Not Available</li>';
+
+            let operatorsHtml = '';
+            for (const [key, value] of Object.entries(stats.operators)) {
+                operatorsHtml += `<li>${key}: ${value}%</li>`;
+            }
+            if (!operatorsHtml) operatorsHtml = '<li>Not Available</li>';
+
+            let signalPowersHtml = '';
+            for (const [key, value] of Object.entries(stats.signal_powers)) {
+                signalPowersHtml += `<li>${key}: ${value} dBm</li>`;
+            }
+            if (!signalPowersHtml) signalPowersHtml = '<li>Not Available</li>';
+
+            let sinrSnrHtml = '';
+            for (const [key, value] of Object.entries(stats.sinr_snr)) {
+                sinrSnrHtml += `<li>${key}: ${value} dB</li>`;
+            }
+            if (!sinrSnrHtml) sinrSnrHtml = '<li>Not Available</li>';
+
+            document.getElementById('devicestatistics').innerHTML = `
+                <h4>Devices Statistics:</h4>
+                <h5>Network Types:</h5>
+                <ul>${networkTypesHtml}</ul>
+                <h5>Operators:</h5>
+                <ul>${operatorsHtml}</ul>
+                <h5>Average Signal Power:</h5>
+                <p>${stats.signal_power_avg_device ? stats.signal_power_avg_device + ' dBm' : 'Not Available'}</p>
+                <h5>Signal Powers:</h5>
+                <ul>${signalPowersHtml}</ul>
+                <h5>SINR/SNR:</h5>
+                <ul>${sinrSnrHtml}</ul>
+            `;
         })
         .catch(error => console.error('Error fetching centralized statistics:', error));
 }
