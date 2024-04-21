@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from datetime import datetime
 from flask_socketio import SocketIO, emit
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -13,8 +14,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 socketio = SocketIO(app)
 
-#from backend.model.celldata import CellData, celldata_schema
-from .model.celldata import CellData, celldata_schema
+from .model.celldatatest import celldata_schema, CellData
 
 
 @app.route('/cellData', methods=['POST'])
@@ -29,8 +29,8 @@ def add_cell_data():
             frequency_band=data['frequency_band'],
             cell_id=data['cell_id'],
             timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M %p'),
-            user_ip = data['user_ip'], #user_ip = request.remote_addr  # Get the IP address of the client
-            user_mac = data['user_mac']
+            user_ip=data['user_ip'],
+            user_mac=data['user_mac']
         )
         db.session.add(cell_data)
         db.session.commit()
@@ -98,11 +98,14 @@ def get_statistics():
         "sinr_snr": sinr_snr
     }), 200
 
+
 from flask import render_template
+
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
+
 
 # Maintain a dictionary to store currently connected devices with their IP addresses
 connected_devices = {}
@@ -113,90 +116,95 @@ previous_devices = {}
 # Maintain a dictionary to store per-device statistics
 device_statistics = {}
 
-import time
-'''
-# Event handler for when a client connects
-@socketio.on('connect')
-def handle_connect():
-    user_sid = request.sid
-    user_ip_request = request.remote_addr # Get the IP address of the client
-    if user_sid not in connected_devices:
-        emit('connection_ack', {'message': 'Connected to server'})
-        #cell_data = CellData.query.filter_by(user_ip=user_ip_request).all()
-        cell_data = db.session.query(CellData).filter_by(user_ip=user_ip_request).first() 
-        if cell_data is not None:
-            connected_devices[user_sid] = cell_data
-        #print(connected_devices)
-'''
+
+# In your centralized_statistics route or any other appropriate place
+def fetch_previous_devices():
+    # Query for the latest entry for each MAC address
+    latest_devices_query = db.session.query(CellData.user_ip,
+                                            func.max(CellData.timestamp).label('max_timestamp')). \
+        group_by(CellData.user_ip).subquery()
+
+    # Join with CellData table to get the complete rows
+    latest_devices = db.session.query(CellData). \
+        join(latest_devices_query,
+             db.and_(CellData.user_ip == latest_devices_query.c.user_ip,
+                     CellData.timestamp == latest_devices_query.c.max_timestamp)).all()
+
+    # Populate the previous_devices dictionary
+    for device in latest_devices:
+        if all(device.user_ip != device_info["user_ip"] for device_info in connected_devices.values()):
+            previous_devices[device.user_ip] = {"user_ip": device.user_ip, "user_mac": device.user_mac}
+
 
 # Event handler for when a client connects
 @socketio.on('connect')
 def handle_connect():
-    user_sid = request.sid
-    user_ip_request = request.remote_addr  # Get the IP address of the client
+    print('connected')
 
-    # Check if the user is not already connected
-    if user_sid not in connected_devices:
-        emit('connection_ack', {'message': 'Connected to server'})
-
-        # Initialize a flag to track if data has been sent
-        data_sent_ack_received = False
-
-        # Listen for the "data_sent_ack" event
-        @socketio.on('data_sent_ack')
-        def handle_data_sent_ack(data):
-            nonlocal data_sent_ack_received
-            data_sent_ack_received = True
-            # Now execute the query and update the connected devices
-            cell_data = db.session.query(CellData).filter_by(user_ip=user_ip_request).first()
-            if cell_data is not None:
-                connected_devices[user_sid] = cell_data
 
 # Event handler for when a client disconnects
 @socketio.on('disconnect')
 def handle_disconnect():
-    user_sid = request.sid
-    user_ip_request = request.remote_addr # Get the IP address of the client
-    if user_sid in connected_devices:
-        #cell_data = CellData.query.filter_by(user_ip=user_ip_request).all()
-        cell_data = db.session.query(CellData).filter_by(user_ip=user_ip_request).first() 
-        previous_devices[user_sid] = cell_data
-        del connected_devices[user_sid]
+    print('disconnected')
+    session_id = request.sid  # Get the session ID
+    user_data = connected_devices.get(session_id)
+
+    if user_data:
+        user_ip = user_data.get('user_ip')
+        if user_ip:
+            # Move the device from connected_devices to previous_devices
+            previous_devices[user_ip] = connected_devices.pop(session_id)
+
+            print("User IP:", previous_devices[user_ip]['user_ip'])
+            print("User MAC:", previous_devices[user_ip]['user_mac'])
+
     emit('disconnection_ack', {'message': 'Disconnected from server'})
+
+
+@socketio.on('user_data')
+def handle_user_data(data):
+    user_ip = data.get('user_ip')
+    user_mac = data.get('user_mac')
+    session_id = request.sid  # Get the session ID
+
+    # Store the association between session ID, IP, and MAC address
+    connected_devices[session_id] = {'user_ip': user_ip, 'user_mac': user_mac}
+
+    # Query the database to get the latest entry for the current device
+    latest_device = CellData.query.filter_by(user_ip=user_ip).order_by(CellData.timestamp.desc()).first()
+
+    if latest_device:
+        # Add the latest device to previous_devices
+        previous_devices[user_ip] = {"user_ip": latest_device.user_ip, "user_mac": latest_device.user_mac}
+    else:
+        # If no entry found, use the provided IP
+        previous_devices[user_ip] = {"user_ip": user_ip, "user_mac": user_mac}
+
+    # If the device is in previous_devices, move it to connected_devices
+    if user_ip in previous_devices:
+        previous_devices.pop(user_ip)  # Delete the matching entry
+
+    connected_devices[session_id] = {"user_ip": user_ip, "user_mac": user_mac}
+
 
 @app.route('/centralized-statistics', methods=['GET'])
 def centralized_statistics():
+    fetch_previous_devices()
     connected_devices_json = {}
     previous_devices_json = {}
 
     # Convert connected_devices dictionary to JSON serializable format
-    for user_sid, cell_data in connected_devices.items():
+    for user_sid, data in connected_devices.items():
         connected_devices_json[user_sid] = {
-            'id': cell_data.id,
-            'operator': cell_data.operator,
-            'signalPower': cell_data.signalPower,
-            'sinr_snr': cell_data.sinr_snr,
-            'networkType': cell_data.networkType,
-            'frequency_band': cell_data.frequency_band,
-            'cell_id': cell_data.cell_id,
-            'timestamp': cell_data.timestamp.strftime('%d %b %Y %I:%M %p'),
-            'user_ip': cell_data.user_ip,
-            'user_mac': cell_data.user_mac
+            'user_ip': data.get('user_ip'),
+            'user_mac': data.get('user_mac')
         }
 
     # Convert previous_devices dictionary to JSON serializable format
-    for user_sid, cell_data in previous_devices.items():
-        previous_devices_json[user_sid] = {
-            'id': cell_data.id,
-            'operator': cell_data.operator,
-            'signalPower': cell_data.signalPower,
-            'sinr_snr': cell_data.sinr_snr,
-            'networkType': cell_data.networkType,
-            'frequency_band': cell_data.frequency_band,
-            'cell_id': cell_data.cell_id,
-            'timestamp': cell_data.timestamp.strftime('%d %b %Y %I:%M %p'),
-            'user_ip': cell_data.user_ip,
-            'user_mac': cell_data.user_mac
+    for user_ip, data in previous_devices.items():
+        previous_devices_json[user_ip] = {
+            'user_ip': data.get("user_ip"),
+            'user_mac': data.get("user_mac")
         }
 
     return jsonify({

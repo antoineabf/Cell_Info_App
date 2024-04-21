@@ -1,5 +1,5 @@
 #from backend.app import db, ma
-from ..app import db, ma
+from ..test import db, ma
 
 
 class CellData(db.Model):
