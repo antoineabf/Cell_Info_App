@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.antoineabf.project451.api.Authentication
 import com.antoineabf.project451.api.model.Statistics
 import com.antoineabf.project451.api.model.infoForStat
@@ -104,6 +105,7 @@ class StatisticsFragment : Fragment() {
         info.userIP = ip;
         info.start = editTextStartDate.text.toString();
         info.end = editTextEndDate.text.toString();
+        Toast.makeText(context, "Getting statistics", Toast.LENGTH_SHORT).show()
         CellDataService.CellDataApi().get_statistics(info,
             "Bearer ${Authentication.getToken()}").enqueue(object:
             Callback<Statistics>{
@@ -169,12 +171,7 @@ class StatisticsFragment : Fragment() {
                     signalPowerPerNetworkTypeTextView?.text="Not Available"
                     signalPowerPerDeviceTextView?.text ="Not Available"
                     SNRPerNetworkTypeTextView?.text = " Not Available"
-
-
-
-
-
-
+                    Toast.makeText(context, "No statistics available", Toast.LENGTH_SHORT).show()
                 }
             }
 

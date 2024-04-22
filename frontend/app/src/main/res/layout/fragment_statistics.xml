@@ -44,103 +44,117 @@
         android:layout_height="wrap_content"
         android:text="Submit"/>
 
-    <!-- Statistics Section Header -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Statistics:"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="100dp"/>
 
-    <!-- Average Connectivity Time per Operator -->
-    <TextView
-        android:id="@+id/txtViewAvgConnectivityTimePerOperator"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Connectivity Time per Operator:"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
-    <!-- Placeholder for Connectivity Time per Operator -->
-    <TextView
-        android:id="@+id/txtConnectivityTimePerOperator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Not Available"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <!-- Average Connectivity Time per Network Type -->
-    <TextView
-        android:id="@+id/txtViewAvgConnectivityTimePerNetworkType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Connectivity Time per Network Type:"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
-    <!-- Placeholder for Connectivity Time per Network Type -->
-    <TextView
-        android:id="@+id/txtConnectivityTimePerNetworkType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Not Available"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
 
-    <!-- Average Signal Power per Network Type -->
-    <TextView
-        android:id="@+id/txtViewAvgSignalPowerPerNetworkType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Signal Power per Network Type:"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
-    <!-- Placeholder for Signal Power per Network Type -->
-    <TextView
-        android:id="@+id/txtSignalPowerPerNetworkType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Not Available"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!-- Average Signal Power per Device -->
-    <TextView
-        android:id="@+id/txtViewAvgSignalPowerPerDevice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Signal Power per Device:"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
-    <!-- Placeholder for Signal Power per Device -->
-    <TextView
-        android:id="@+id/txtSignalPowerPerDevice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Not Available"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
 
-    <!-- Average SNR per Network Type -->
-    <TextView
-        android:id="@+id/txtViewAvgSNRPerNetworkType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="SNR per Network Type:"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
-    <!-- Placeholder for SNR per Network Type -->
-    <TextView
-        android:id="@+id/txtSNRPerNetworkType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Not Available"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Statistics:"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="100dp"/>
+
+
+            <TextView
+                android:id="@+id/txtViewAvgConnectivityTimePerOperator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Connectivity Time per Operator:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtConnectivityTimePerOperator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not Available"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+
+            <TextView
+                android:id="@+id/txtViewAvgConnectivityTimePerNetworkType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Connectivity Time per Network Type:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtConnectivityTimePerNetworkType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not Available"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+
+            <TextView
+                android:id="@+id/txtViewAvgSignalPowerPerNetworkType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Signal Power per Network Type:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtSignalPowerPerNetworkType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not Available"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+
+            <TextView
+                android:id="@+id/txtViewAvgSignalPowerPerDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Signal Power per Device:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtSignalPowerPerDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not Available"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtViewAvgSNRPerNetworkType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SNR per Network Type:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtSNRPerNetworkType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not Available"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
