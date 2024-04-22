@@ -120,7 +120,7 @@ def retrieve_statistics(statistics):
         sinr_snr[net] = 0
         count = 0
         for stat in statistics:
-            if stat.networkType == net:
+            if stat.networkType == net and stat.signalPower != None and stat.sinr_snr!= None:
                 signal_powers[net] += stat.signalPower
                 sinr_snr[net] += stat.sinr_snr
                 count += 1
