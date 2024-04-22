@@ -292,7 +292,7 @@ def centralized_statistics():
     # Convert connected_devices dictionary to JSON serializable format
     for user_sid, data in connected_devices.items():
         if data.get('user_ip') not in ListIP:
-            ListIP+=data.get('user_ip')
+            ListIP.append(data.get('user_ip'))
             connected_devices_json[user_sid] = {
                 'user_ip': data.get('user_ip'),
                 'user_mac': data.get('user_mac')
