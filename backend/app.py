@@ -287,13 +287,16 @@ def centralized_statistics():
     fetch_previous_devices()
     connected_devices_json = {}
     previous_devices_json = {}
+    ListIP=[]
 
     # Convert connected_devices dictionary to JSON serializable format
     for user_sid, data in connected_devices.items():
-        connected_devices_json[user_sid] = {
-            'user_ip': data.get('user_ip'),
-            'user_mac': data.get('user_mac')
-        }
+        if data.get('user_ip') not in ListIP:
+            ListIP+=data.get('user_ip')
+            connected_devices_json[user_sid] = {
+                'user_ip': data.get('user_ip'),
+                'user_mac': data.get('user_mac')
+            }
 
     # Convert previous_devices dictionary to JSON serializable format
     for user_ip, data in previous_devices.items():
