@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify, abort
-import json
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
-from datetime import datetime
+import datetime
 from flask_socketio import SocketIO, emit
 from sqlalchemy import func
 from flask import render_template
+import jwt
+from flask_bcrypt import Bcrypt
 from .db_config import DB_CONFIG
 
 app = Flask(__name__)
@@ -16,8 +18,79 @@ CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 socketio = SocketIO(app)
+bcrypt = Bcrypt(app)
 
+
+from .model.user import User, user_schema
 from .model.celldata import celldata_schema, CellData
+
+SECRET_KEY = "b'|\xe7\xbfU3`\xc4\xec\xa7\xa9zf:}\xb5\xc7\xb9\x139^3@Dv'"
+
+
+def create_token(user_id):
+    payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=4),
+        'iat': datetime.datetime.utcnow(),
+        'sub': user_id
+    }
+    return jwt.encode(
+        payload,
+        SECRET_KEY,
+        algorithm='HS256'
+    )
+
+
+def extract_auth_token(authenticated_request):
+    auth_header = authenticated_request.headers.get('Authorization')
+    if auth_header:
+        return auth_header.split(" ")[1]
+    else:
+        return None
+
+
+def decode_token(token):
+    payload = jwt.decode(token, SECRET_KEY, 'HS256')
+    return payload['sub']
+
+
+@app.route('/authentication', methods=['POST'])
+def authentication():
+    try:
+        if "user_name" not in request.json or "password" not in request.json:
+            abort(400)
+        username = request.json["user_name"]
+        password = request.json["password"]
+        user = User.query.filter_by(user_name=username).first()
+        if not user:
+            abort(403)
+        if not bcrypt.check_password_hash(user.hashed_password, password):
+            abort(403)
+        token = create_token(user.id)
+        return jsonify({"token": token}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
+@app.route('/user', methods=['POST'])
+def create_user():
+    try:
+        user_name = request.json["user_name"]
+        password = request.json["password"]
+        user = User(user_name, password)
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user_schema.dump(user)), 201
+
+    except IntegrityError:
+        db.session.rollback() 
+        return jsonify({"message": "Username taken"}), 409  
+    except KeyError:
+        return jsonify({"message": "Missing required fields"}), 400  
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
+
 def retrieve_statistics(statistics):
     operators = {}
     network_types = {}
@@ -68,6 +141,14 @@ def retrieve_statistics(statistics):
 
 @app.route('/cellData', methods=['POST'])
 def add_cell_data():
+    token = extract_auth_token(request)
+    if not token:
+        abort(403)
+    else:
+        try:
+            user_id = decode_token(token)
+        except:
+            abort(403)
     try:
         data = request.json
         cell_data = CellData(
@@ -77,9 +158,10 @@ def add_cell_data():
             networkType=data['networkType'] if 'networkType' in request.json else None,
             frequency_band=data['frequency_band'] if 'frequency_band' in request.json else None,
             cell_id=data['cell_id'] if 'cell_id' in request.json else None,
-            timestamp=datetime.strptime(data['timestamp'], '%d %b %Y %I:%M:%S %p') if 'timestamp' in request.json else None,
+            timestamp=datetime.datetime.strptime(data['timestamp'], '%d %b %Y %I:%M:%S %p') if 'timestamp' in request.json else None,
             user_ip=data['user_ip'] if 'user_ip' in request.json else None,
-            user_mac=data['user_mac'] if 'user_mac' in request.json else None
+            user_mac=data['user_mac'] if 'user_mac' in request.json else None,
+            user_id= user_id
         )
 
         if cell_data.signalPower == None and cell_data.sinr_snr == None and cell_data.networkType == None and cell_data.frequency_band == None and cell_data.cell_id == None:
@@ -96,13 +178,19 @@ def add_cell_data():
 
 @app.route('/statistics', methods=['POST'])
 def get_statistics():
+    token = extract_auth_token(request)
+    if not token:
+        abort(403)
+    else:
+        try:
+            user_id = decode_token(token)
+        except:
+            abort(403)
     data = request.json
-    START_DATE = datetime.strptime(data['start_date'], '%Y-%m-%d %H:%M')
-    END_DATE = datetime.strptime(data['end_date'], '%Y-%m-%d %H:%M')
-    client_ip = data['user_ip']
+    START_DATE = datetime.datetime.strptime(data['start_date'], '%Y-%m-%d %H:%M')
+    END_DATE = datetime.datetime.strptime(data['end_date'], '%Y-%m-%d %H:%M')
     
-
-    statistics = CellData.query.filter_by(user_ip=client_ip).filter(
+    statistics = CellData.query.filter_by(user_id=user_id).filter(
         CellData.timestamp.between(START_DATE, END_DATE)).all()
 
     return retrieve_statistics(statistics),200

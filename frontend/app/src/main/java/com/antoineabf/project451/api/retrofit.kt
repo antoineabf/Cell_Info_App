@@ -7,10 +7,13 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import com.antoineabf.project451.api.model.CellData
 import com.antoineabf.project451.api.model.Statistics
+import com.antoineabf.project451.api.model.Token
+import com.antoineabf.project451.api.model.User
 import com.antoineabf.project451.api.model.infoForStat
+import retrofit2.http.Header
 
 object CellDataService {
-    private const val API_URL: String = "http://172.20.10.3:5000"
+    private const val API_URL: String = "http://192.168.1.101:5000"
     fun CellDataApi():Cell {
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(API_URL)
@@ -19,9 +22,16 @@ object CellDataService {
         return retrofit.create(Cell::class.java);
     }
     interface Cell {
+        @POST("/user")
+        fun addUser(@Body user: User): Call <User>
+
+        @POST("/authentication")
+        fun authenticate(@Body user: User): Call <Token>
         @POST("/cellData")
-        fun add_cell_data(@Body cellData: CellData): Call<Any>
+        fun add_cell_data(@Body cellData: CellData,
+                          @Header("Authorization") authorization: String?): Call<Any>
         @POST("/statistics")
-        fun get_statistics(@Body info: infoForStat): Call<Statistics>
+        fun get_statistics(@Body info: infoForStat,
+                           @Header("Authorization") authorization: String?): Call<Statistics>
     }
 }

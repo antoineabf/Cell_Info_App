@@ -6,6 +6,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.tabs.TabLayout
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
@@ -13,7 +14,10 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.annotation.RequiresApi
+import com.antoineabf.project451.api.Authentication
 import com.antoineabf.project451.api.CellDataService
 import com.antoineabf.project451.api.model.CellData
 import io.socket.client.IO
@@ -31,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private var tabLayout: TabLayout? = null
     private var tabsViewPager: ViewPager2? = null
     private var mSocket: Socket? = null
+    private var menu: Menu? = null
     private val handler = Handler(Looper.getMainLooper())
     private val postInfoRunnable = object : Runnable {
         @RequiresApi(Build.VERSION_CODES.P)
@@ -39,10 +44,19 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed(this, 10 * 1000) // Schedule next execution after 10 seconds
         }
     }
-    @RequiresApi(Build.VERSION_CODES.Q)
+
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Authentication.initialize(this)
+
+
+        if (Authentication.getToken() == null) {
+            val intent = Intent(this, StartActivity::class.java)
+            startActivity(intent)
+        }
+
 
         tabLayout = findViewById(R.id.tabLayout)
         tabsViewPager = findViewById(R.id.tabsViewPager)
@@ -65,7 +79,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         try {
-            val url = "172.20.10.3"
+            val url = "192.168.1.101"
 
             mSocket = IO.socket("http://$url:5000")
             mSocket?.connect()
@@ -86,20 +100,15 @@ class MainActivity : AppCompatActivity() {
                 data.put("user_mac", user_mac)
                 mSocket?.emit(Socket.EVENT_DISCONNECT, data)
 
-
-                Log.d("disconnectionTag1", "Disconnected from server")
-
             }
         } catch (e: Exception) {
-            Log.d("errorTag1","error")
             e.printStackTrace()
         }
-        postInfo()
-        handler.postDelayed(postInfoRunnable, 10 * 1000)
 
-
-
-
+        if (Authentication.getToken() != null && Authentication.getToken() != "guest") {
+            postInfo()
+            handler.postDelayed(postInfoRunnable, 10 * 1000)
+        }
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -181,7 +190,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        CellDataService.CellDataApi().add_cell_data(cellData).enqueue(object :
+        CellDataService.CellDataApi().add_cell_data(cellData,
+            if (Authentication.getToken() != null) "Bearer ${Authentication.getToken()}" else null).enqueue(object :
             Callback<Any> {
             override fun onResponse(call: Call<Any>, response:
             Response<Any>
@@ -195,9 +205,30 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        this.menu = menu
+        setMenu()
+        return true
+    }
 
+    private fun setMenu() {
+        menu?.clear()
+        menuInflater.inflate(if(Authentication.getToken() == null || Authentication.getToken() == "guest" )
+            R.menu.menu_logged_out else R.menu.menu_logged_in, menu)
+    }
 
-
-
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.login) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        } else if (item.itemId == R.id.register) {
+            val intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
+        } else if (item.itemId == R.id.logout) {
+            Authentication.clearToken()
+            val intent = Intent(this, StartActivity::class.java)
+            startActivity(intent)
+        }
+        return true
+    }
 }

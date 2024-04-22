@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import com.antoineabf.project451.api.Authentication
 import com.antoineabf.project451.api.model.Statistics
 import com.antoineabf.project451.api.model.infoForStat
 import retrofit2.Call
@@ -33,31 +34,35 @@ class StatisticsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_statistics, container, false)
+    ): View {
+        val view: View
+        if (Authentication.getToken() == "guest" ||Authentication.getToken() == null){
+            view = inflater.inflate(R.layout.fragment_statistics_logged_out, container, false)
+            }
+        else{
+            view = inflater.inflate(R.layout.fragment_statistics, container, false)
+            editTextStartDate = view.findViewById(R.id.editTextStartDate)
+            editTextEndDate = view.findViewById(R.id.editTextEndDate)
+            buttonSendDatetime = view.findViewById(R.id.buttonSendDatetime)
+            connectivityTimePerOperatorTextView = view.findViewById(R.id.txtConnectivityTimePerOperator)
+            connectivityTimePerNetworkTypeTextView = view.findViewById(R.id.txtConnectivityTimePerNetworkType)
+            signalPowerPerNetworkTypeTextView = view.findViewById(R.id.txtSignalPowerPerNetworkType)
+            signalPowerPerDeviceTextView = view.findViewById(R.id.txtSignalPowerPerDevice)
+            SNRPerNetworkTypeTextView = view.findViewById(R.id.txtSNRPerNetworkType)
 
-        editTextStartDate = view.findViewById(R.id.editTextStartDate)
-        editTextEndDate = view.findViewById(R.id.editTextEndDate)
-        buttonSendDatetime = view.findViewById(R.id.buttonSendDatetime)
-        connectivityTimePerOperatorTextView = view.findViewById(R.id.txtConnectivityTimePerOperator)
-        connectivityTimePerNetworkTypeTextView = view.findViewById(R.id.txtConnectivityTimePerNetworkType)
-        signalPowerPerNetworkTypeTextView = view.findViewById(R.id.txtSignalPowerPerNetworkType)
-        signalPowerPerDeviceTextView = view.findViewById(R.id.txtSignalPowerPerDevice)
-        SNRPerNetworkTypeTextView = view.findViewById(R.id.txtSNRPerNetworkType)
+            editTextStartDate.setOnClickListener {
+                showDateTimePicker(editTextStartDate)
+            }
 
-        editTextStartDate.setOnClickListener {
-            showDateTimePicker(editTextStartDate)
+            editTextEndDate.setOnClickListener {
+                showDateTimePicker(editTextEndDate)
+            }
+
+            buttonSendDatetime.setOnClickListener{
+                val context: Context = requireContext()
+                getStatistics(context)
+            }
         }
-
-        editTextEndDate.setOnClickListener {
-            showDateTimePicker(editTextEndDate)
-        }
-
-        buttonSendDatetime.setOnClickListener{
-            val context: Context = requireContext()
-            getStatistics(context)
-        }
-
         return view
     }
 
@@ -99,7 +104,8 @@ class StatisticsFragment : Fragment() {
         info.userIP = ip;
         info.start = editTextStartDate.text.toString();
         info.end = editTextEndDate.text.toString();
-        CellDataService.CellDataApi().get_statistics(info).enqueue(object:
+        CellDataService.CellDataApi().get_statistics(info,
+            "Bearer ${Authentication.getToken()}").enqueue(object:
             Callback<Statistics>{
             override fun onResponse(call: Call<Statistics>, response: Response<Statistics>) {
                 val statistics = response.body()
