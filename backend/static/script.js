@@ -52,16 +52,15 @@ function fetchCentralizedStatistics() {
             if (!sinrSnrHtml) sinrSnrHtml = '<li>Not Available</li>';
 
             document.getElementById('devicestatistics').innerHTML = `
-                <h4>Devices Statistics:</h4>
-                <h5>Network Types:</h5>
-                <ul>${networkTypesHtml}</ul>
-                <h5>Operators:</h5>
+                <h5>Connectivity Time per Operator:</h5>
                 <ul>${operatorsHtml}</ul>
-                <h5>Average Signal Power:</h5>
-                <p>${stats.signal_power_avg_device ? stats.signal_power_avg_device + ' dBm' : 'Not Available'}</p>
-                <h5>Signal Powers:</h5>
+                <h5>Connectivity Time per Network Type:</h5>
+                <ul>${networkTypesHtml}</ul>
+                <h5>Signal Power per Network Type:</h5>
                 <ul>${signalPowersHtml}</ul>
-                <h5>SINR/SNR:</h5>
+                <h5>Average Signal Power of Devices:</h5>
+                <ul>${stats.signal_power_avg_device ? stats.signal_power_avg_device + ' dBm' : 'Not Available'}</ul>
+                <h5>SNR per Network Type:</h5>
                 <ul>${sinrSnrHtml}</ul>
             `;
         })
