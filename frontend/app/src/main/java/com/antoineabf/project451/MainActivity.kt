@@ -226,7 +226,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         } else if (item.itemId == R.id.logout) {
             Authentication.clearToken()
-            onDestroy()
             val intent = Intent(this, StartActivity::class.java)
             startActivity(intent)
         }
