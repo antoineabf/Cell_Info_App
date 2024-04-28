@@ -55,9 +55,9 @@ The server and app will provide insights such as:
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://<mysql_username>:<mysql_password>@<mysql_host>:<mysql_port>/<mysql_db_name>'
 - now open a python flask shell using: python -m flask shell
 - Type the following:
-- 1) from backend.app import db
-- 2) db.create_all()
-- 3) exit()
+1) from backend.app import db
+2) db.create_all()
+3) exit()
 - run the flask server by using the following command: flask run -h 0.0.0.0
 -copy the link where the server is running and save it for later
 - Open the frontend folder in android studio
