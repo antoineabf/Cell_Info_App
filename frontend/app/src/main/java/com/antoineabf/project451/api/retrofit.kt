@@ -13,7 +13,7 @@ import com.antoineabf.project451.api.model.infoForStat
 import retrofit2.http.Header
 
 object CellDataService {
-    private const val API_URL: String = "http://10.169.16.67:5000"
+    private const val API_URL: String = "http://10.169.0.70:5000"
     fun CellDataApi():Cell {
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(API_URL)

@@ -31,7 +31,7 @@ import java.net.NetworkInterface
 import java.text.SimpleDateFormat
 import java.util.Date
 
-private const val SOCKET_URL: String = "http://10.169.16.67:5000"
+private const val SOCKET_URL: String = "http://10.169.0.70:5000"
 class MainActivity : AppCompatActivity() {
     private var tabLayout: TabLayout? = null
     private var tabsViewPager: ViewPager2? = null
