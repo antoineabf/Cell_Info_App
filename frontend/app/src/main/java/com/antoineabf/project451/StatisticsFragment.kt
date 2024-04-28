@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -149,7 +148,7 @@ class StatisticsFragment : Fragment() {
                         // Display operator
                     if (statistics.operator?.isNotEmpty() == true) {
                         val operatorText =
-                            statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                            statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}%" }
                                 ?: "Not Available"
                         connectivityTimePerOperatorTextView?.text = operatorText
                     }
@@ -160,7 +159,7 @@ class StatisticsFragment : Fragment() {
                     // Display network type
                     if (statistics.networkType?.isNotEmpty() == true) {
                         val networkTypeText =
-                            statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                            statistics.networkType?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}%" }
                                 ?: "Not Available"
                         connectivityTimePerNetworkTypeTextView?.text = networkTypeText
                     }
@@ -171,7 +170,7 @@ class StatisticsFragment : Fragment() {
                     // Display signal powers
                     if (statistics.signalPowers?.isNotEmpty() == true) {
                         val signalPowersText =
-                            statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                            statistics.signalPowers?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value} dBm" }
                                 ?: "Not Available"
                         signalPowerPerNetworkTypeTextView?.text = signalPowersText
                     }
@@ -182,7 +181,7 @@ class StatisticsFragment : Fragment() {
                     // Display signal power average
                     if (statistics.signalPowerAvg?.toInt() != 0) {
                         val signalPowerAvg = statistics.signalPowerAvg ?: "Not Available"
-                        signalPowerPerDeviceTextView?.text = "$signalPowerAvg"
+                        signalPowerPerDeviceTextView?.text = "$signalPowerAvg dBm"
                     }
                     else{
                         signalPowerPerDeviceTextView?.text="Not Available"
@@ -191,7 +190,7 @@ class StatisticsFragment : Fragment() {
                     // Display SINR/SNR
                     if(statistics.sinrSNR?.isNotEmpty() == true) {
                         val sinrSNRText =
-                            statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
+                            statistics.sinrSNR?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value} dB" }
                                 ?: "Not Available"
                         SNRPerNetworkTypeTextView?.text = sinrSNRText
                     }
@@ -215,7 +214,6 @@ class StatisticsFragment : Fragment() {
         });
 
     }
-
     private fun clearScreen(){
         connectivityTimePerOperatorTextView?.text = "Not Available"
         connectivityTimePerNetworkTypeTextView?.text = "Not Available"
@@ -224,5 +222,35 @@ class StatisticsFragment : Fragment() {
         SNRPerNetworkTypeTextView?.text = "Not Available"
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val connectivityPerNetwork =  connectivityTimePerNetworkTypeTextView?.text.toString()
+        val connectivityPerOperator =  connectivityTimePerOperatorTextView?.text.toString()
+        val signalPowerPerNetwork = signalPowerPerNetworkTypeTextView?.text.toString()
+        val signalPowerPerDevice = signalPowerPerDeviceTextView?.text.toString()
+        val SNR = SNRPerNetworkTypeTextView?.text.toString()
+
+        outState.putString("connectivityPerNetwork",connectivityPerNetwork)
+        outState.putString("connectivityPerOperator",connectivityPerOperator)
+        outState.putString("signalPowerPerNetwork",signalPowerPerNetwork)
+        outState.putString("signalPowerPerDevice",signalPowerPerDevice)
+        outState.putString("SNR",SNR)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        clearScreen()
+        val cpn =  savedInstanceState?.getString("connectivityPerNetwork")
+        val cpo =  savedInstanceState?.getString("connectivityPerOperator")
+        val spn =  savedInstanceState?.getString("signalPowerPerNetwork")
+        val spd =  savedInstanceState?.getString("signalPowerPerDevice")
+        val snr =  savedInstanceState?.getString("SNR")
+
+        connectivityTimePerNetworkTypeTextView?.text = cpn
+        connectivityTimePerOperatorTextView?.text = cpo
+        signalPowerPerNetworkTypeTextView?.text = spn
+        signalPowerPerDeviceTextView?.text = spd
+        SNRPerNetworkTypeTextView?.text = snr
+    }
 
 }
