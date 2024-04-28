@@ -48,17 +48,21 @@ The server and app will provide insights such as:
 
 ### Prepare and Run the Server and Application
 - Extract the zipped folder
+- For the database open MySQL and create on localhost:3306 a database <mysql_db_name>
 - Create a venv for the backend folder
 - Install requirements using pip -r install requirements.txt
 - Add db_config.py file to specify MySQL database name and username/password by adding the following variable:
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://<mysql_username>:<mysql_password>@<mysql_host>:<mysql_port>/<mysql_db_name>'
 - now open a python flask shell using: python -m flask shell
 - Type the following:
-from backend.app import db
-db.create_all()
-exit()
+- 1) from backend.app import db
+- 2) db.create_all()
+- 3) exit()
 - run the flask server by using the following command: flask run -h 0.0.0.0
-- Open the frontend folder in android studio, build the project and run
+-copy the link where the server is running and save it for later
+- Open the frontend folder in android studio
+- place the copied link in the retrofit.kt file in the API_URL variable and in the MainActivity.kt in the SOCKET_URL variable
+- Build your project and run
 - Begin processing and storing data.
 
 ## Usage Instructions
