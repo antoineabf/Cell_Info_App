@@ -20,6 +20,7 @@ import com.antoineabf.project451.api.model.infoForStat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.util.*
 
 class StatisticsFragment : Fragment() {
@@ -60,8 +61,29 @@ class StatisticsFragment : Fragment() {
             }
 
             buttonSendDatetime.setOnClickListener{
-                val context: Context = requireContext()
-                getStatistics(context)
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                //add 1 minute to it
+                val updatedDate = Date(Date().time + 60000)
+                //put the date in a string in the specified format
+                val updatedDateStr = dateFormat.format(updatedDate)
+
+                if (editTextEndDate.text?.isEmpty() == true || editTextStartDate.text?.isEmpty() == true){
+                    Toast.makeText(context, "Please enter both dates", Toast.LENGTH_SHORT).show()
+                    clearScreen()
+                }
+                else if (isDateGreaterThan(editTextStartDate.text.toString(),updatedDateStr) == true
+                    || isDateGreaterThan(editTextEndDate.text.toString(),updatedDateStr) == true){
+                    Toast.makeText(context, "We can't predict the future", Toast.LENGTH_SHORT).show()
+                    clearScreen()
+                }
+                else if (isDateGreaterThan(editTextStartDate.text.toString(),editTextEndDate.text.toString()) == true){
+                    Toast.makeText(context, "Start date can't be after end date", Toast.LENGTH_SHORT).show()
+                    clearScreen()
+                }
+                else {
+                    val context: Context = requireContext()
+                    getStatistics(context)
+                }
             }
         }
         return view
@@ -99,6 +121,13 @@ class StatisticsFragment : Fragment() {
         datePickerDialog.show()
     }
 
+    private fun isDateGreaterThan(date1: String, date2: String): Boolean? {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val parsedDate1: Date? = format.parse(date1)
+        val parsedDate2: Date? = format.parse(date2)
+        return parsedDate1?.after(parsedDate2)
+    }
+
     fun getStatistics(context: Context){
         val info = infoForStat();
         val ip = CaptureInfo().getIPAddress(context);
@@ -112,7 +141,12 @@ class StatisticsFragment : Fragment() {
             override fun onResponse(call: Call<Statistics>, response: Response<Statistics>) {
                 val statistics = response.body()
                 if (statistics != null) {
-                    // Display operator
+
+                    if (statistics.operator?.isEmpty() == true && statistics.networkType?.isEmpty() == true && statistics.signalPowers?.isEmpty() == true &&statistics.signalPowerAvg == 0f && statistics.sinrSNR?.isEmpty() == true){
+                        Toast.makeText(context, "No statistics available in this period", Toast.LENGTH_SHORT).show()
+                        clearScreen()
+                    }
+                        // Display operator
                     if (statistics.operator?.isNotEmpty() == true) {
                         val operatorText =
                             statistics.operator?.entries?.joinToString(separator = "\n") { "${it.key}:${it.value}" }
@@ -182,6 +216,13 @@ class StatisticsFragment : Fragment() {
 
     }
 
+    private fun clearScreen(){
+        connectivityTimePerOperatorTextView?.text = "Not Available"
+        connectivityTimePerNetworkTypeTextView?.text = "Not Available"
+        signalPowerPerNetworkTypeTextView?.text = "Not Available"
+        signalPowerPerDeviceTextView?.text = "Not Available"
+        SNRPerNetworkTypeTextView?.text = "Not Available"
+    }
 
 
 }

@@ -3,6 +3,7 @@ package com.antoineabf.project451
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import com.google.android.material.snackbar.Snackbar
@@ -29,60 +30,104 @@ class RegistrationActivity : AppCompatActivity() {
         submitButton?.setOnClickListener { view ->
             createUser()
         }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
     private fun createUser() {
         val user = User()
         user.username = usernameEditText?.editText?.text.toString()
         user.password = passwordEditText?.editText?.text.toString()
 
-        CellDataService.CellDataApi().addUser(user).enqueue(object :
-            Callback<User> {
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Snackbar.make(
-                    submitButton as View,
-                    "Could not create account.",
-                    Snackbar.LENGTH_LONG
-                )
-                    .show()
-            }
-            override fun onResponse(call: Call<User>, response:
-            Response<User>) {
-                CellDataService.CellDataApi().authenticate(user).enqueue(object :
-                    Callback<Token> {
-                    override fun onFailure(call: Call<Token>, t:
-                    Throwable) {
-                        return
-                    }
-                    override fun onResponse(call: Call<Token>, response:
-                    Response<Token>) {
-                        if (response.isSuccessful) {
-                            Snackbar.make(
-                                submitButton as View,
-                                "Account Created.",
-                                Snackbar.LENGTH_LONG
-                            )
-                                .show()
-                            response.body()?.token?.let {
-                                Authentication.saveToken(it)
-                            }
-                            onCompleted()
 
-                        }
-                        else{
-                            Snackbar.make(
-                                submitButton as View,
-                                "Username already exists",
-                                Snackbar.LENGTH_LONG
-                            )
-                                .show()
-                        }
+        if (usernameEditText?.editText?.text?.isEmpty() == true || passwordEditText?.editText?.text?.isEmpty() == true) {
+            Snackbar.make(
+                submitButton as View, "Please provide all info!",
+                Snackbar.LENGTH_LONG
+            )
+                .show()
+            return
+        }
+        else {
+            CellDataService.CellDataApi().addUser(user).enqueue(object :
+                Callback<User> {
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Snackbar.make(
+                        submitButton as View,
+                        "Could not create account.",
+                        Snackbar.LENGTH_LONG
+                    )
+                        .show()
+                }
+
+                override fun onResponse(
+                    call: Call<User>, response:
+                    Response<User>
+                ) {
+                    if (response.isSuccessful) {
+                        authenticate(user)
+                    } else {
+                        Snackbar.make(
+                            submitButton as View,
+                            "Username already taken",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
                     }
-                })
-            }
-        })
+                }
+            })
+        }
     }
+
+    private fun authenticate(user: User){
+            CellDataService.CellDataApi().authenticate(user).enqueue(object :
+                Callback<Token> {
+                override fun onFailure(call: Call<Token>, t:
+                Throwable) {
+                    Snackbar.make(
+                        submitButton as View,
+                        "Could not create account.",
+                        Snackbar.LENGTH_LONG
+                    )
+                        .show()
+                }
+                override fun onResponse(call: Call<Token>, response:
+                Response<Token>) {
+                    if (response.isSuccessful) {
+                        Snackbar.make(
+                            submitButton as View,
+                            "Account Created.",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
+                        response.body()?.token?.let {
+                            Authentication.saveToken(it)
+                        }
+                        onCompleted()
+
+                    }
+                    else{
+                        Snackbar.make(
+                            submitButton as View,
+                            "Could register into account.",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                }
+            })
+        }
+
     private fun onCompleted() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

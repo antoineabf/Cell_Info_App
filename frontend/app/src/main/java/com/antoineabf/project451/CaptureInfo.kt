@@ -24,6 +24,9 @@ import java.net.NetworkInterface
 public class CaptureInfo {
     fun getOperatorName(context: Context): String? {
         val manager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        if (manager.networkOperatorName == ""){
+            return "Not Available"
+        }
         return manager.networkOperatorName
     }
     fun getSignalStrength(context: Context) :String {

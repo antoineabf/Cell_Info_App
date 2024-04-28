@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/mainback">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/startDateInputLayout"
@@ -35,14 +36,16 @@
             android:inputType="none"
             android:focusable="false"
             android:clickable="true"
-            android:onClick="showDateTimePicker"/>
+            android:onClick="showDateTimePicker"
+            android:layout_marginTop="10dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/buttonSendDatetime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Submit"/>
+        android:text="Submit"
+        android:layout_marginTop="10dp"/>
 
 
     <ScrollView
@@ -63,7 +66,9 @@
                 android:text="Statistics:"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:layout_marginTop="100dp"/>
+                android:layout_marginTop="75dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_blackitalic"/>
 
 
             <TextView
@@ -73,7 +78,9 @@
                 android:text="Connectivity Time per Operator:"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_lightitalic"/>
 
             <TextView
                 android:id="@+id/txtConnectivityTimePerOperator"
@@ -81,7 +88,9 @@
                 android:layout_height="wrap_content"
                 android:text="Not Available"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"/>
 
 
             <TextView
@@ -91,7 +100,9 @@
                 android:text="Connectivity Time per Network Type:"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_lightitalic"/>
 
             <TextView
                 android:id="@+id/txtConnectivityTimePerNetworkType"
@@ -99,7 +110,9 @@
                 android:layout_height="wrap_content"
                 android:text="Not Available"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"/>
 
 
             <TextView
@@ -109,7 +122,9 @@
                 android:text="Signal Power per Network Type:"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_lightitalic"/>
 
             <TextView
                 android:id="@+id/txtSignalPowerPerNetworkType"
@@ -117,7 +132,9 @@
                 android:layout_height="wrap_content"
                 android:text="Not Available"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"/>
 
 
             <TextView
@@ -127,7 +144,9 @@
                 android:text="Signal Power per Device:"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_lightitalic"/>
 
             <TextView
                 android:id="@+id/txtSignalPowerPerDevice"
@@ -135,7 +154,9 @@
                 android:layout_height="wrap_content"
                 android:text="Not Available"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"/>
 
             <TextView
                 android:id="@+id/txtViewAvgSNRPerNetworkType"
@@ -144,7 +165,9 @@
                 android:text="SNR per Network Type:"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_lightitalic"/>
 
             <TextView
                 android:id="@+id/txtSNRPerNetworkType"
@@ -152,7 +175,9 @@
                 android:layout_height="wrap_content"
                 android:text="Not Available"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"/>
 
         </LinearLayout>
     </ScrollView>

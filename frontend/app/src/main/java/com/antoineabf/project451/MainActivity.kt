@@ -28,7 +28,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
 import java.net.NetworkInterface
-
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class MainActivity : AppCompatActivity() {
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         try {
-            val url = "192.168.1.101"
+            val url = "10.169.1.42"
 
             mSocket = IO.socket("http://$url:5000")
             mSocket?.connect()
@@ -91,14 +92,6 @@ class MainActivity : AppCompatActivity() {
                 data.put("user_ip", user_ip)
                 data.put("user_mac", user_mac)
                 mSocket?.emit("user_data", data)
-
-            }?.on(Socket.EVENT_DISCONNECT) {
-                val user_ip = getIPAddress(this)
-                val user_mac = getMacAddress()
-                val data = JSONObject()
-                data.put("user_ip", user_ip)
-                data.put("user_mac", user_mac)
-                mSocket?.emit(Socket.EVENT_DISCONNECT, data)
 
             }
         } catch (e: Exception) {

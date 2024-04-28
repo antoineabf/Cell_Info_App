@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/mainback">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
@@ -13,7 +14,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:tabBackground="@color/blue_dark"
+        app:tabIndicatorColor="@color/white"
+        app:tabTextColor="@color/white"
+        app:tabSelectedTextColor="@color/white"/>
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/tabsViewPager"
         android:layout_width="match_parent"

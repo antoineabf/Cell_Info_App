@@ -13,7 +13,8 @@
         app:layout_constraintTop_toBottomOf="@id/linear_layout_timestamp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/roboto_blackitalic"/>
     <TextView
         android:id="@+id/textViewNetworkAnalyzer"
         android:layout_width="wrap_content"
@@ -25,7 +26,9 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/white"
+        android:fontFamily="@font/roboto_blackitalic"/>
 
     <!-- Operator -->
     <LinearLayout
@@ -43,7 +46,9 @@
             android:text="Operator: "
             android:textSize="20sp"
             android:layout_marginTop="170dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="@font/roboto_blackitalic"
+            android:textColor="@color/white"/>
 
         <TextView
             android:id="@+id/txtOperator"
@@ -51,7 +56,9 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:layout_marginTop="170dp"
-            android:text="Operator Info" />
+            android:text="Operator Info"
+            android:fontFamily="@font/roboto_lightitalic"
+            android:textColor="@color/white"/>
     </LinearLayout>
 
     <!-- Signal Power -->
@@ -69,14 +76,18 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Signal Power: " />
+            android:text="Signal Power: "
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_blackitalic"/>
 
         <TextView
             android:id="@+id/txtSignalPower"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Signal Power Info" />
+            android:text="Signal Power Info"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_lightitalic"/>
     </LinearLayout>
 
     <!-- SINR -->
@@ -94,14 +105,18 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="SNR: " />
+            android:text="SNR: "
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_blackitalic"/>
 
         <TextView
             android:id="@+id/txtSNR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="SNR Info" />
+            android:text="SNR Info"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_lightitalic"/>
     </LinearLayout>
 
     <!-- Network Type -->
@@ -119,14 +134,18 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Network Type: " />
+            android:text="Network Type: "
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_blackitalic"/>
 
         <TextView
             android:id="@+id/txtNetworkType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Network Type Info" />
+            android:text="Network Type Info"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_lightitalic"/>
     </LinearLayout>
 
     <!-- Frequency Band -->
@@ -144,14 +163,18 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Frequency Band: " />
+            android:text="Frequency Band: "
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_blackitalic"/>
 
         <TextView
             android:id="@+id/txtFrequencyBand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Frequency Band Info" />
+            android:text="Frequency Band Info"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_lightitalic"/>
     </LinearLayout>
 
     <!-- Cell ID -->
@@ -169,14 +192,18 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Cell ID: " />
+            android:text="Cell ID: "
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_blackitalic"/>
 
         <TextView
             android:id="@+id/txtCellID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Cell ID Info" />
+            android:text="Cell ID Info"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_lightitalic"/>
     </LinearLayout>
 
     <!-- Timestamp -->
@@ -194,14 +221,18 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Timestamp: " />
+            android:text="Timestamp: "
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_blackitalic"/>
 
         <TextView
             android:id="@+id/txtTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Timestamp Info" />
+            android:text="Timestamp Info"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_lightitalic"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
