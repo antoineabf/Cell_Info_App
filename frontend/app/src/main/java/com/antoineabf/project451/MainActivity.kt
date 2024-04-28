@@ -31,7 +31,7 @@ import java.net.NetworkInterface
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
+private const val SOCKET_URL: String = "http://10.169.16.67:5000"
 class MainActivity : AppCompatActivity() {
     private var tabLayout: TabLayout? = null
     private var tabsViewPager: ViewPager2? = null
@@ -80,9 +80,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         try {
-            val url = "10.169.1.42"
-
-            mSocket = IO.socket("http://$url:5000")
+            mSocket = IO.socket(SOCKET_URL)
             mSocket?.connect()
             mSocket?.on(Socket.EVENT_CONNECT) {
                 Log.d("connectionTag1", "Connected to server")
